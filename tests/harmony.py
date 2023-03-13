@@ -4,38 +4,13 @@ import pybullet as p
 from environment.camera.camera import Camera, CameraIntrinsic
 import pybullet_data
 from collections import namedtuple
+from operator import methodcaller
 
-
-
-# from environment.basicEnvYumi import BaiscEnvironmentYumi
-def ang_in_mpi_ppi(angle):
-        """
-        Convert the angle to the range [-pi, pi).
-
-        Args:
-            angle (float): angle in radians.
-
-        Returns:
-            float: equivalent angle in [-pi, pi).
-        """
-
-        angle = (angle + np.pi) % (2 * np.pi) - np.pi
-        return angle
 
 class YumiEnv():
     def __init__(self) -> None:
         self.simulationStepTime = 0.005
         self.vis = True
-
-        # robot = ar.Robot('yumi_grippers')
-        # tgt_pos = [0.0, 0.0, 0.1]
-        # tgt_euler = [0,0,0]
-
-        # robot.arm.set_ee_pose(tgt_pos, tgt_euler, arm='left')
-        # # time.sleep(4)
-        # for _ in range(1000):
-        #     robot.pb_client.stepSimulation()
-        
 
         p.connect(p.GUI if self.vis else p.DIRECT)
         p.setAdditionalSearchPath(pybullet_data.getDataPath())
@@ -57,6 +32,20 @@ class YumiEnv():
         camera_target = np.array([camera_pos[0], camera_pos[1], 0.0])        
         self._init_camera(camera_pos,camera_target)
 
+    @staticmethod
+    def _ang_in_mpi_ppi(angle):
+        """
+        Convert the angle to the range [-pi, pi).
+
+        Args:
+            angle (float): angle in radians.
+
+        Returns:
+            float: equivalent angle in [-pi, pi).
+        """
+
+        angle = (angle + np.pi) % (2 * np.pi) - np.pi
+        return angle
 
     def load_robot (self,urdf, print_joint_info = False):        
         self.robot_id = p.loadURDF(urdf,[0, 0, -0.11], [0, 0, 0, 1])
@@ -141,14 +130,14 @@ class YumiEnv():
 
     def move_left_arm(self,pose):                
         joint_poses = p.calculateInverseKinematics(self.robot_id, self._LEFT_HAND_JOINT_IDS[-1], pose[0], pose[1])
-        joint_poses = list(map(ang_in_mpi_ppi, joint_poses))
+        joint_poses = list(map(self._ang_in_mpi_ppi, joint_poses))
         p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._LEFT_HAND_JOINT_IDS,targetPositions  = joint_poses[9:16])
 
         
     
     def move_right_arm(self,pose):        
         joint_poses = p.calculateInverseKinematics(self.robot_id, self._RIGHT_HAND_JOINT_IDS[-1], pose[0], pose[1])
-        joint_poses = list(map(ang_in_mpi_ppi, joint_poses))
+        joint_poses = list(map(self._ang_in_mpi_ppi, joint_poses))
 
         p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._RIGHT_HAND_JOINT_IDS,targetPositions  = joint_poses[:7], )
     
