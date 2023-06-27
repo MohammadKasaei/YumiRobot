@@ -20,8 +20,6 @@ if __name__ == '__main__':
     env = YumiEnv()
     # rack_size = [0.105, 0.205,0.05]
     # env.add_a_cube(pos=[0.5,0.0,0.05], size=[0.1,0.2,0.04],color=[1.0,0.,0,1])
-    
-
 
     env.create_harmony_box(box_centre=[0.6,0.])
     env.add_a_rack(centre=[0.6,0.0,0.05])
