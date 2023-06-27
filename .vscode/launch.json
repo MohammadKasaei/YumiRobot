@@ -5,10 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: HarmonyBox",
+            "type": "python",
+            "request": "launch",
+            "module": "tests.harmony_box",
+            "justMyCode": true
+        },
+        {
             "name": "Python: Harmony",
             "type": "python",
             "request": "launch",
-            "module": "tests.harmony",
+            "module": "tests.harmony_general_test",
             "justMyCode": true
         }
     ]
