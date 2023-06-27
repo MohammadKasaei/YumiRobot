@@ -1,10 +1,17 @@
 import time
 import numpy as np
 import pybullet as p
-from environment.camera.camera import Camera, CameraIntrinsic
 import pybullet_data
+import sys
+import cv2
+import random
+
 from collections import namedtuple
 from operator import methodcaller
+
+from environment.camera.camera import Camera, CameraIntrinsic
+from graspGenerator.grasp_generator import GraspGenerator
+
 
 
 class YumiEnv():
@@ -28,7 +35,7 @@ class YumiEnv():
         print ('-'*40)
 
         
-        camera_pos = np.array([0.3, -0., 0.6])
+        camera_pos = np.array([0.3, 0.0, 0.5])
         camera_target = np.array([camera_pos[0], camera_pos[1], 0.0])        
         self._init_camera(camera_pos,camera_target)
 
@@ -101,7 +108,7 @@ class YumiEnv():
                     print (jointType)                            
                     print ('-'*40)
 
-    def _init_camera(self,camera_pos,camera_target,visulize_camera = True):        
+    def _init_camera(self,camera_pos,camera_target,visulize_camera = False):        
         self._camera_pos = camera_pos
         self._camera_target = camera_target
         IMG_SIZE = 220
@@ -114,8 +121,6 @@ class YumiEnv():
     def _dummy_sim_step(self,n):
         for _ in range(n):
             p.stepSimulation()
-
-    
 
     def go_home(self):
         p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._LEFT_HAND_JOINT_IDS,targetPositions  = self._LEFT_HOME_POSITION)
@@ -151,7 +156,7 @@ class YumiEnv():
   
     def add_a_cube(self,pos,size=[0.1,0.1,0.1],mass = 0.1, color = [1,1,0,1]):
 
-        cubesID = []
+        # cubesID = []
         box     = p.createCollisionShape(p.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, size[2]/2])
         vis     = p.createVisualShape(p.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, size[2]/2], rgbaColor=color)
         obj_id  = p.createMultiBody(mass, box, vis, pos, [0,0,0,1])
@@ -160,8 +165,9 @@ class YumiEnv():
                         spinningFriction=0.001,
                         rollingFriction=0.001,
                         linearDamping=0.0)
-        cubesID.append(obj_id)
+        # cubesID.append(obj_id)
         p.stepSimulation()
+        return obj_id 
     
     
 
@@ -182,45 +188,164 @@ class YumiEnv():
             box     = p.createCollisionShape(p.GEOM_BOX, halfExtents=[halfsize, halfsize, halfsize])
             vis     = p.createVisualShape(p.GEOM_BOX, halfExtents=[halfsize, halfsize, halfsize], rgbaColor=color, specularColor=[1,1,1])
             obj_id  = p.createMultiBody(mass, box, vis, pos, [0,0,0,1])
+    
+
+    def capture_image(self,removeBackground = False): 
+        bgr, depth, _ = self.camera.get_cam_img()
+        
+        if (removeBackground):                      
+           bgr = bgr-self.bgBGRBox+self.bgBGRWithoutBox
+           depth = depth-self.bgDepthBox+self.bgDepthWithoutBox
+
+        ##convert BGR to RGB
+        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        return rgb,depth
+    
+
+    def creat_pile_of_tubes(self,number_of_tubes):
+        obj_init_pos = [0.4, -0.]
+        self.tubeObj = []
+
+        for i in range(number_of_tubes):
+            r_x    = random.uniform(obj_init_pos[0] - 0.2, obj_init_pos[0] + 0.2)
+            r_y    = random.uniform(obj_init_pos[1] - 0.2, obj_init_pos[1] + 0.2)
+            roll   = random.uniform(0, np.pi)
+            orn    = p.getQuaternionFromEuler([roll, 0, 0])
+            pos    = [r_x, r_y, 0.15]
+            obj_id = p.loadURDF("objects/ycb_objects/YcbTomatoSoupCan/model.urdf", pos, orn)
+            self._dummy_sim_step(50)
+            self.tubeObj.append(obj_id)
+            time.sleep(0.1)
+
+        self.obj_ids = self.tubeObj    
+        self._dummy_sim_step(100)
+
+    def creat_pile_of_cube(self,number_of_cubes):
+        obj_init_pos = [0.4, -0.]
+        self.cube_obj = []
+
+        for i in range(number_of_cubes):
+            r_x    = random.uniform(obj_init_pos[0] - 0.2, obj_init_pos[0] + 0.2)
+            r_y    = random.uniform(obj_init_pos[1] - 0.2, obj_init_pos[1] + 0.2)
+            roll   = random.uniform(0, np.pi)
+            orn    = p.getQuaternionFromEuler([roll, 0, 0])
+            pos    = [r_x, r_y, 0.15]
+            obj_id = self.add_a_cube(pos=pos,size=[0.04,0.04,0.04],color=[i/10.0,0.5,i/10.0,1])
+            self._dummy_sim_step(50)
+            self.cube_obj.append(obj_id)
+            time.sleep(0.1)
+
+        # self.obj_ids = self.tubeObj    
+        self._dummy_sim_step(100)
+        return self.cube_obj
+
+
+    def remove_drawing(self,lineIDs):
+        for line in lineIDs:
+            p.removeUserDebugItem(line)
+
+    def visualize_predicted_grasp(self,grasps,color = [0,0,1],visibleTime =2):
+       
+        lineIDs = []
+        for g in grasps:
+            x, y, z, yaw, opening_len, obj_height = g
+            opening_len = np.clip(opening_len,0,0.04)
+            yaw = yaw-np.pi/2
+            lineIDs.append(p.addUserDebugLine([x, y, z], [x, y, z+0.15],color, lineWidth=5))
+            lineIDs.append(p.addUserDebugLine([x, y, z], [x+(opening_len*np.cos(yaw)), y+(opening_len*np.sin(yaw)), z],color, lineWidth=5))
+            lineIDs.append(p.addUserDebugLine([x, y, z], [x-(opening_len*np.cos(yaw)), y-(opening_len*np.sin(yaw)), z],color, lineWidth=5))
+            
+
+        self._dummy_sim_step(10)
+        time.sleep(visibleTime)
+        self.remove_drawing(lineIDs)
+
 
         
 
 if __name__ == '__main__':
 
     env = YumiEnv()
-
+    # env.creat_pile_of_cube(1)
+    # for i in range(10):
+    #     env.add_a_cube(pos=[0.62,0.31,0.05],
+    #                     size=[0.04,0.04,0.04],color=[i/10.0,0.5,i/10.0,1])
+    networkName = "GGCNN"
+    if (networkName == "GGCNN"):
+            ##### GGCNN #####
+            network_model = "GGCNN"           
+            network_path = 'trained_models/GGCNN/ggcnn_weights_cornell/ggcnn_epoch_23_cornell'
+            sys.path.append('trained_models/GGCNN')
+    elif (networkName == "GR_ConvNet"):
+            ##### GR-ConvNet #####
+            network_model = "GR_ConvNet"           
+            network_path = 'trained_models/GR_ConvNet/cornell-randsplit-rgbd-grconvnet3-drop1-ch32/epoch_19_iou_0.98'
+            sys.path.append('trained_models/GR_ConvNet')
+  
+    depth_radius = 2
+    # env = BaiscEnvironment(GUI = True,robotType ="Panda",img_size= IMG_SIZE)
+    # # env = BaiscEnvironment(GUI = True,robotType ="UR5",img_size= IMG_SIZE)
+    # env.createTempBox(0.35, 2)
+    # env.updateBackgroundImage(1)
+    
+    # gg = GraspGenerator(network_path, env.camera, depth_radius, env.camera.width, network_model)
+    # env.creat_pile_of_tubes(10)
+   
 
     gw = i = 0 
 
     while (True):
         gw = 1 if gw == 0 else 0
-        
 
-        env.add_a_cube([0.5,0.,0.18],size=[0.04,0.04,0.04])
+        # rgb ,depth = env.capture_image(0)    
+        # number_of_predict = 1
+        # output = True
+        # grasps, save_name = gg.predict_grasp( rgb, depth, n_grasps=number_of_predict, show_output=output)
+        # print(grasps)
+        # if (grasps == []):
+        #     print ("can not predict any grasp point")
+        # else:
+        #     env.visualize_predicted_grasp(grasps,color=[1,0,1],visibleTime=1)   
 
         env.move_left_gripper (gw=gw)
         env.move_right_gripper (gw=gw)
         
-        env._dummy_sim_step(1)
+        env._dummy_sim_step(10)
 
+        T  = 1
+        w  = 2*np.pi/T
+        radius = 0.1
+        x0 = np.array([0.4,0,0.3])
+        gt = 0
 
-        for i in range(100):    
+        for i in range(200):    
+            gt += 0.01
             if i % 10 == 0:
-                env.camera.get_cam_img()
+                env.capture_image()
             ori = p.getQuaternionFromEuler([0,np.pi,0])
-            pose = [[0.3,0.4-(i*0.006),0.2],ori]            
+            xd = (x0 + np.array((radius*np.sin(w*(gt)),radius*np.cos(w*(gt)),0.00*gt)))
+            
+            # pose = [[0.3,0.4-(i*0.006),0.3],ori]            
+            pose = [xd,ori]
             env.move_left_arm(pose=pose)
             env._dummy_sim_step(50)
             # time.sleep(0.01)
 
+        env.go_home()
 
-
-
-
-        # env.move_left_arm(pose=pose)
+        gt = 0
+        for i in range(200):    
+            gt += 0.01
+            if i % 10 == 0:
+                env.capture_image()
+            ori = p.getQuaternionFromEuler([0,np.pi,0])
+            # pose = [[0.3+(i*0.006),-0.4+(i*0.006),0.6],ori]            
+            xd = (x0 + np.array((radius*np.sin(w*(gt)),radius*np.cos(w*(gt)),0.00*gt)))
+            pose = [xd,ori]
+            env.move_right_arm(pose=pose)
+            env._dummy_sim_step(50)
+            # time.sleep(0.01)
         
+        env.go_home()    
         time.sleep(0.1)
-        # rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-        # p.stepSimulation()
-        # time.sleep(0.010)
-
+    

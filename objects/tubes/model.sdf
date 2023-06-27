@@ -1,0 +1,43 @@
+<?xml version='1.0'?>
+<sdf version="1.4">
+  <model name="tube">
+
+    <static>false</static>
+    <link name="link">
+      <inertial>
+        <pose>0 0. -0.1 0 0 0</pose>
+        <mass>0.01</mass>
+        <inertia>
+          <ixx>0</ixx>
+          <ixy>0</ixy>
+          <ixz>0</ixz>
+          <iyy>0</iyy>
+          <iyz>0</iyz>
+          <izz>0</izz>
+        </inertia>
+      </inertial>
+      <collision name="collision">
+        <geometry>
+         <mesh>
+          <uri>model://covid-tubes/meshes/single-tube.dae</uri>
+          <scale>0.055 0.06 0.06</scale>
+         </mesh>
+        </geometry>
+      </collision>
+      <visual name="visual">
+        <geometry>
+         <mesh>
+          <uri>model://covid-tubes/meshes/single-tube.dae</uri>
+          <scale>0.05 0.05 0.05</scale>
+         </mesh>
+        </geometry>
+	<material>
+          <script>
+            <uri>model://covid-tubes/materials/textures</uri>
+            <name>Tubes/Diffuse</name>
+          </script>
+        </material>
+      </visual>
+    </link>
+  </model>
+</sdf>
