@@ -35,8 +35,8 @@ class YumiEnv():
         print ('-'*40)
 
         
-        camera_pos = np.array([0.4, 0.0, 0.6])
-        camera_target = np.array([camera_pos[0], camera_pos[1], 0.0])        
+        camera_pos = np.array([-0.08, 0.0, 0.8])
+        camera_target = np.array([0.6, 0, 0.0])        
         self._init_camera(camera_pos,camera_target)
 
     @staticmethod
@@ -184,15 +184,16 @@ class YumiEnv():
     
     
 
-    def visualize_camera_position(self,camPos):
+    def visualize_camera_position(self):
+            camPos = self._camera_pos
             pos = np.copy(camPos[:])+np.array([0,0,0.0025])
             size    = 0.05
             halfsize= size/2
             mass    = 0 #kg
             color   = [1,0,0,1]
-            lens    = p.createCollisionShape(p.GEOM_CYLINDER, radius=halfsize*2,height = 0.005 )
-            vis     = p.createVisualShape(p.GEOM_CYLINDER,radius=halfsize*2,length=0.005, rgbaColor=color, specularColor=[0,0,0])
-            obj_id  = p.createMultiBody(mass, lens, vis, pos, [0,0,0,1])
+            # lens    = p.createCollisionShape(p.GEOM_CYLINDER, radius=halfsize*2,height = 0.005 )
+            # vis     = p.createVisualShape(p.GEOM_CYLINDER,radius=halfsize*2,length=0.005, rgbaColor=color, specularColor=[0,0,0])
+            # obj_id  = p.createMultiBody(mass, lens, vis, pos, [0,0,0,1])
             
             ####
 
