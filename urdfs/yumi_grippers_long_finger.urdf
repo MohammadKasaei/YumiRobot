@@ -301,8 +301,7 @@
       </geometry>
       <material name="Grey"/>
     </collision>
-
-  
+  </link>
   <!--///////////////////////////////////// LEFT ARM ////////////////////////////////  -->
   <!-- joint between body and link_1_l -->
   <joint name="yumi_joint_1_l" type="revolute">
@@ -551,7 +550,8 @@
   <!-- <xacro:yumi_transmission name="${name}" hardware_interface="${hardware_interface}"/> -->
   <!--joint between {parent} and base-->
   <joint name="yumi_link_7_r_joint" type="fixed">
-    <origin rpy="0 0 3.14159265359" xyz="0 0 0.007"/>
+    <!-- <origin rpy="0 0 3.14159265359" xyz="0 0 0.007"/> -->
+    <origin rpy="0 0 3.14159265359" xyz="0 0 0.1"/>    
     <parent link="yumi_link_7_r"/>
     <child link="gripper_r_base"/>
   </joint>
@@ -562,113 +562,79 @@
       <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/gripper/base.stl"/>
-      </geometry>
-      <material name="Light_Grey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/gripper/coarse/base.stl"/>
-      </geometry>
-      <material name="Light_Grey"/>
-    </collision>
-  </link>
-  <!-- joint between base and right finger -->
-  <joint name="gripper_r_joint" type="prismatic">
-    <parent link="gripper_r_base"/>
-    <child link="gripper_r_finger_r"/>
-    <origin rpy="0 0 0" xyz="0 -0.0065 0.0837"/>
-    <axis xyz="-1 0 0"/>
-    <limit effort="300" lower="0" upper="0.025" velocity="0.02"/>
-    <!--   <safety_controller soft_lower_limit="${-168 * M_PI / 180}"
-           soft_upper_limit="${168 * M_PI / 180}"
-           k_position="${safety_controller_k_pos}"
-           k_velocity="${safety_controller_k_vel}"/> -->
-    <dynamics damping="0.5"/>
-  </joint>
-  <link name="gripper_r_finger_r">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.01"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/gripper/finger.stl"/>
-      </geometry>
-      <material name="Grey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/gripper/coarse/finger.stl"/>
-      </geometry>
-      <material name="Grey"/>
-    </collision>
-  </link>
-  <!-- </link>
-    <link name="gripper_r_finger_r">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.1"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
-    </inertial>
-    <visual>
       <origin xyz="0 0 0"/>
       <geometry>
-        <box size="0.01 0.02 0.1" />
+        <box size="0.02 0.01 0.2" />
       </geometry>
       <material name="black">
         <color rgba="0 0 0 1.0"/>
       </material>
     </visual>
-
     <collision>
       <origin xyz="0 0 0"/>
       <geometry>
-        <box size="0.01 0.02 0.1" />
+        <box size="0.02 0.01 0.2" />
       </geometry>
-    </collision>
-  </link> -->
-  <!-- joint between base and left finger -->
-  <joint name="gripper_r_joint_m" type="prismatic">
-    <parent link="gripper_r_base"/>
-    <child link="gripper_r_finger_l"/>
-    <origin rpy="0 0 3.14159265359" xyz="0 0.0065 0.0837"/>
-    <axis xyz="-1 0 0"/>
-    <limit effort="300" lower="0" upper="0.025" velocity="0.02"/>
-    <!--   <safety_controller soft_lower_limit="${-168 * M_PI / 180}"
-           soft_upper_limit="${168 * M_PI / 180}"
-           k_position="${safety_controller_k_pos}"
-           k_velocity="${safety_controller_k_vel}"/> -->
-    <dynamics damping="0.5"/>
-    <mimic joint="gripper_r_joint"/>
-  </joint>
-  <link name="gripper_r_finger_l">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.01"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/gripper/finger.stl"/>
-      </geometry>
-      <material name="Grey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/gripper/coarse/finger.stl"/>
-      </geometry>
-      <material name="Grey"/>
     </collision>
   </link>
+
+<joint name="yumi_link_7_r_joint_2" type="fixed">    
+    <origin rpy="0 0 3.14159265359" xyz="0 0 0.12"/>    
+    <parent link="gripper_r_base"/>
+    <child link="gripper_r_base2"/>
+  </joint>
+  <link name="gripper_r_base2">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.2"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.13 0.01 0.05" />
+      </geometry>
+      <material name="navy">
+        <color rgba="0.3 0.3 0.5 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.13 0.01 0.05" />
+      </geometry>
+    </collision>
+  </link>
+
+<joint name="yumi_link_7_r_joint_3" type="fixed">    
+    <origin rpy="0 0 3.14159265359" xyz="0 0.01 0.025"/>    
+    <parent link="gripper_r_base2"/>
+    <child link="gripper_r_base3"/>
+  </joint>
+  <link name="gripper_r_base3">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.05"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.13 0.02 0.0025" />
+      </geometry>
+      <material name="navy">
+        <color rgba="0.3 0.3 0.5 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.13 0.02 0.0025" />
+      </geometry>
+    </collision>
+  </link>
+  <!-- joint between base and right finger -->
+ 
   <!-- Plugin for the mimic o/c joint - AFAIK, that shouldn't be necessary any more starting with Gazebo 3.0 -->
   <gazebo>
     <plugin filename="libgazebo_mimic_plugin.so" name="mimic_plugin">
@@ -695,10 +661,11 @@
   </transmission>
   <!--joint between {parent} and base-->
   <joint name="yumi_link_7_l_joint" type="fixed">
-    <origin rpy="0 0 3.14159265359" xyz="0 0 0.007"/>
+    <origin rpy="0 0 3.14159265359" xyz="0 0 0.1"/>
     <parent link="yumi_link_7_l"/>
     <child link="gripper_l_base"/>
   </joint>
+  
   <link name="gripper_l_base">
     <inertial>
       <origin rpy="0 0 0" xyz="0 0 0"/>
@@ -706,91 +673,78 @@
       <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
     </inertial>
     <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/gripper/base.stl"/>
+        <box size="0.02 0.01 0.2" />
       </geometry>
-      <material name="Light_Grey"/>
+      <material name="black">
+        <color rgba="0 0 0 1.0"/>
+      </material>
     </visual>
     <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <origin xyz="0 0 0"/>
       <geometry>
-        <mesh filename="meshes/gripper/coarse/base.stl"/>
+        <box size="0.02 0.01 0.2" />
       </geometry>
-      <material name="Light_Grey"/>
-    </collision>
-  </link>
-  <!-- joint between base and right finger -->
-  <joint name="gripper_l_joint" type="prismatic">
-    <parent link="gripper_l_base"/>
-    <child link="gripper_l_finger_r"/>
-    <origin rpy="0 0 0" xyz="0 -0.0065 0.0837"/>
-    <axis xyz="-1 0 0"/>
-    <limit effort="300" lower="0" upper="0.025" velocity="0.02"/>
-    <!--   <safety_controller soft_lower_limit="${-168 * M_PI / 180}"
-           soft_upper_limit="${168 * M_PI / 180}"
-           k_position="${safety_controller_k_pos}"
-           k_velocity="${safety_controller_k_vel}"/> -->
-    <dynamics damping="0.5"/>
-  </joint>
-  <link name="gripper_l_finger_r">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.01"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/gripper/finger.stl"/>
-      </geometry>
-      <material name="Grey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/gripper/coarse/finger.stl"/>
-      </geometry>
-      <material name="Grey"/>
-    </collision>
-  </link>
-  <!-- joint between base and left finger -->
-  <joint name="gripper_l_joint_m" type="prismatic">
-    <parent link="gripper_l_base"/>
-    <child link="gripper_l_finger_l"/>
-    <origin rpy="0 0 3.14159265359" xyz="0 0.0065 0.0837"/>
-    <axis xyz="-1 0 0"/>
-    <limit effort="300" lower="0" upper="0.025" velocity="0.02"/>
-    <!--   <safety_controller soft_lower_limit="${-168 * M_PI / 180}"
-           soft_upper_limit="${168 * M_PI / 180}"
-           k_position="${safety_controller_k_pos}"
-           k_velocity="${safety_controller_k_vel}"/> -->
-    <dynamics damping="0.5"/>
-    <mimic joint="gripper_l_joint"/>
-  </joint>
-  <link name="gripper_l_finger_l">
-    <inertial>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <mass value="0.01"/>
-      <inertia ixx="0.000001" ixy="0" ixz="0" iyy="0.000001" iyz="0" izz="0.000001"/>
-    </inertial>
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/gripper/finger.stl"/>
-      </geometry>
-      <material name="Grey"/>
-    </visual>
-    <collision>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/gripper/coarse/finger.stl"/>
-      </geometry>
-      <material name="Grey"/>
     </collision>
   </link>
 
-   
+<joint name="yumi_link_7_l_joint_2" type="fixed">    
+    <origin rpy="0 0 3.14159265359" xyz="0 0 0.12"/>    
+    <parent link="gripper_l_base"/>
+    <child link="gripper_l_base2"/>
+  </joint>
+  <link name="gripper_l_base2">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.05"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.13 0.01 0.05" />
+      </geometry>
+      <material name="navy">
+        <color rgba="0.3 0.3 0.5 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.13 0.01 0.05" />
+      </geometry>
+    </collision>
+  </link>
+
+<joint name="yumi_link_7_l_joint_3" type="fixed">    
+    <origin rpy="0 0 3.14159265359" xyz="0 -0.01 0.025"/>    
+    <parent link="gripper_l_base2"/>
+    <child link="gripper_l_base3"/>
+  </joint>
+  <link name="gripper_l_base3">
+    <inertial>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <mass value="0.05"/>
+      <inertia ixx="0.0001" ixy="0" ixz="0" iyy="0.0001" iyz="0" izz="0.0001"/>
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.13 0.02 0.0025" />
+      </geometry>
+      <material name="navy">
+        <color rgba="0.3 0.3 0.5 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0"/>
+      <geometry>
+        <box size="0.13 0.02 0.0025" />
+      </geometry>
+    </collision>
+  </link>
+
   <!-- Plugin for the mimic o/c joint - AFAIK, that shouldn't be necessary any more starting with Gazebo 3.0 -->
   <gazebo>
     <plugin filename="libgazebo_mimic_plugin.so" name="mimic_plugin">
@@ -815,21 +769,7 @@
       <mechanicalReduction>1</mechanicalReduction>
     </actuator>
   </transmission>
-  <!-- Table top -->
-  <joint name="yumi_body_to_table_top" type="fixed">
-    <parent link="yumi_body"/>
-    <child link="table_top"/>
-    <origin rpy="0 0 1.57079" xyz="0.110910 0 0.0"/>
-  </joint>
-  <link name="table_top">
-    <visual>
-      <origin rpy="0 0 0" xyz="0 0 0"/>
-      <geometry>
-        <mesh filename="meshes/table/table_top.stl"/>
-      </geometry>
-      <material name="Grey"/>
-    </visual>
-  </link>
+
   <!-- Table base -->
   <!-- <joint name="yumi_body_to_table_base" type="fixed">
     <parent link="yumi_body"/>

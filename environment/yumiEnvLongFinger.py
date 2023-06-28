@@ -14,7 +14,7 @@ from graspGenerator.grasp_generator import GraspGenerator
 
 
 
-class YumiEnv():
+class yumiEnvLongFinger():
     def __init__(self) -> None:
         self.simulationStepTime = 0.005
         self.vis = True
@@ -30,8 +30,6 @@ class YumiEnv():
         
         
         self.go_home()        
-        self.move_left_gripper (gw=0)
-        self.move_right_gripper (gw=0)
         self._dummy_sim_step(1000)
 
         print("\n\n\nRobot is armed and ready to use...\n\n\n")
@@ -66,17 +64,17 @@ class YumiEnv():
                          "yumi_joint_1_l", "yumi_joint_2_l", "yumi_joint_7_l", "yumi_joint_3_l",
                          "yumi_joint_4_l", "yumi_joint_5_l", "yumi_joint_6_l","gripper_l_joint","gripper_l_joint_m"]
         
-        self._left_ee_frame_name  = 'yumi_joint_6_l'
-        self._right_ee_frame_name = 'yumi_joint_6_r'
+        self._left_ee_frame_name  = 'yumi_link_7_l_joint_3'
+        self._right_ee_frame_name = 'yumi_link_7_r_joint_3'
         
         self._LEFT_HOME_POSITION = [-0.473, -1.450, 1.091, 0.031, 0.513, 0.77, -1.669]
         self._RIGHT_HOME_POSITION = [0.413, -1.325, -1.040, -0.053, -0.484, 0.841, -1.546]
 
         self._RIGHT_HAND_JOINT_IDS = [1,2,3,4,5,6,7]
-        self._RIGHT_GRIP_JOINT_IDS = [9,10]
+        self._RIGHT_GRIP_JOINT_IDS = [8,9,10]
                 
         self._LEFT_HAND_JOINT_IDS = [11,12,13,14,15,16,17]
-        self._LEFT_GRIP_JOINT_IDS = [19,20]
+        self._LEFT_GRIP_JOINT_IDS = [18,19,20]
 
         self._max_torques = [42, 90, 39, 42, 3, 12, 1]
 
@@ -104,7 +102,7 @@ class YumiEnv():
                             jointUpperLimit, jointMaxForce, jointMaxVelocity, controllable,
                             jointAxis, parentFramePos, parentFrameOrn)
 
-            if info.type == "REVOLUTE" or info.type == "PRISMATIC":  # set revolute joint to static
+            if info.type == "REVOLUTE" or info.type == "PRISMATIC" or True:  # set revolute joint to static
                 p.setJointMotorControl2(self.robot_id, info.id, p.POSITION_CONTROL, targetPosition=0, force=0)
                 if print_joint_info:
                     print (info)
@@ -133,15 +131,26 @@ class YumiEnv():
         self._dummy_sim_step(100)
 
     def get_left_ee_state(self):
-        return p.getLinkState(self.robot_id,self._left_ee_frame_name)
+        return p.getLinkState(self.robot_id,self._LEFT_GRIP_JOINT_IDS[-1])
     
     def get_right_ee_state(self):
-        return p.getLinkState(self.robot_id,self._right_ee_frame_name)
+        return p.getLinkState(self.robot_id,self._RIGHT_GRIP_JOINT_IDS[-1])
 
     def move_left_arm(self,pose):                
         joint_poses = p.calculateInverseKinematics(self.robot_id, self._LEFT_HAND_JOINT_IDS[-1], pose[0], pose[1])
         joint_poses = list(map(self._ang_in_mpi_ppi, joint_poses))
-        p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._LEFT_HAND_JOINT_IDS,targetPositions  = joint_poses[9:16])
+        p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._LEFT_HAND_JOINT_IDS,targetPositions  = joint_poses[7:14])
+    
+    def move_left_arm_lf(self,p1):                
+        p0 = self.get_left_ee_state()
+        pose = p1
+        pose[0] = 0.98*np.array(p0[0])+0.02*p1[0]
+        pose[1] = 0.98*np.array(p0[1])+0.02*np.array(p1[1])
+        
+
+        joint_poses = p.calculateInverseKinematics(self.robot_id, self._LEFT_HAND_JOINT_IDS[-1], pose[0], pose[1])
+        joint_poses = list(map(self._ang_in_mpi_ppi, joint_poses))
+        p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._LEFT_HAND_JOINT_IDS,targetPositions  = joint_poses[7:14])
 
     def move_right_arm(self,pose):        
         joint_poses = p.calculateInverseKinematics(self.robot_id, self._RIGHT_HAND_JOINT_IDS[-1], pose[0], pose[1])
@@ -169,6 +178,15 @@ class YumiEnv():
                         rollingFriction=0.001,
                         linearDamping=0.0)
         # cubesID.append(obj_id)
+        p.stepSimulation()
+        return obj_id 
+    
+    def add_a_cube_without_collision(self,pos,size=[0.1,0.1,0.1], color = [1,1,0,1]):
+
+        # cubesID = []
+        box     = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0, 0, 0])
+        vis     = p.createVisualShape(p.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, size[2]/2], rgbaColor=color)
+        obj_id  = p.createMultiBody(0, box, vis, pos, [0,0,0,1])
         p.stepSimulation()
         return obj_id 
     
@@ -286,8 +304,8 @@ class YumiEnv():
                          useFixedBase=True)
         
     def create_harmony_box(self, box_centre):
-        box_width = 0.33
-        box_height = 0.27
+        box_width = 0.35
+        box_height = 0.29
         box_z = 0.2/2
         id1 = p.loadURDF(f'environment/urdf/objects/slab3.urdf',
                          [box_centre[0] - box_width / 2.0, box_centre[1], box_z],

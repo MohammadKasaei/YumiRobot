@@ -12,42 +12,183 @@ from operator import methodcaller
 from environment.camera.camera import Camera, CameraIntrinsic
 from graspGenerator.grasp_generator import GraspGenerator
 
-from environment.yumiEnv import YumiEnv
+from environment.yumiEnvLongFinger import yumiEnvLongFinger
         
 
 if __name__ == '__main__':
 
-    env = YumiEnv()
-    # rack_size = [0.105, 0.205,0.05]
-    # env.add_a_cube(pos=[0.5,0.0,0.05], size=[0.1,0.2,0.04],color=[1.0,0.,0,1])
-
-    env.create_harmony_box(box_centre=[0.6,0.])
-    env.add_a_rack(centre=[0.6,0.0,0.05])
-    env.visualize_camera_position()
-        
-    networkName = "GGCNN"
-    if (networkName == "GGCNN"):
-            ##### GGCNN #####
-            network_model = "GGCNN"           
-            network_path = 'trained_models/GGCNN/ggcnn_weights_cornell/ggcnn_epoch_23_cornell'
-            sys.path.append('trained_models/GGCNN')
-    elif (networkName == "GR_ConvNet"):
-            ##### GR-ConvNet #####
-            network_model = "GR_ConvNet"           
-            network_path = 'trained_models/GR_ConvNet/cornell-randsplit-rgbd-grconvnet3-drop1-ch32/epoch_19_iou_0.98'
-            sys.path.append('trained_models/GR_ConvNet')
-  
-    depth_radius = 2
-
-    # env = BaiscEnvironment(GUI = True,robotType ="Panda",img_size= IMG_SIZE)
-    # # env = BaiscEnvironment(GUI = True,robotType ="UR5",img_size= IMG_SIZE)
-    # env.createTempBox(0.35, 2)
-    # env.updateBackgroundImage(1)
+    env = yumiEnvLongFinger()
     
-    # gg = GraspGenerator(network_path, env.camera, depth_radius, env.camera.width, network_model)
-    # env.creat_pile_of_tubes(10)
+    env.add_a_cube(pos=[0.6,0,0.02],size=[0.33,0.12,0.02],color=[0.1,0.1,0.1,1],mass=5)
+    env.add_a_cube_without_collision(pos=[0.6,0,0.02],size=[0.34,0.275,0.02],color=[0.1,0.1,0.1,1])
+    env.create_harmony_box(box_centre=[0.6,0.])
+    
+    env.add_a_rack(centre=[0.53,0.0,0.05])
+    # env.add_a_rack(centre=[0.68,0.0,0.05],color=[0,1,0,1])
+    # env.add_a_rack(centre=[0.67,0.0,0.05],color=[0,1,0,1])
+    
+    # env.visualize_camera_position()
+    
 
-    gw = i = 0 
+    gw = 0
+    gt = 0
+    x0 = np.array([0., 0.0 , 0.25])
+
+    time.sleep(10)
+
+    state = 0 
+    while (True):
+
+
+        if state == 0 : # go home
+            # env.go_home()
+            ori = p.getQuaternionFromEuler([0,np.pi,0])        
+            xd  = np.array([0.5,0.4,0.6])
+            pose_l = [xd,ori]        
+            env.move_left_arm(pose=pose_l)
+            # env.move_left_arm_lf(pose_l)
+            
+            
+            xd  = [0.5,-0.4,0.6]
+            pose_r = [xd,ori]
+            env.move_right_arm(pose=pose_r)
+
+            env.wait(10)
+            state = 1
+
+        elif state == 1: # move on top of the box
+            move_y = 0.25
+            for i in range(1000):
+                ori = p.getQuaternionFromEuler([0,np.pi,0])        
+                # xd  = np.array([0.5,0.14,0.6])
+                xd  = np.array([0.5,0.4-(i*move_y/1000.0),0.6])
+                
+                pose_l = [xd,ori]        
+                env.move_left_arm(pose=pose_l)
+                
+                xd  = [0.5,-0.4+(i*move_y/1000.0),0.6]
+                pose_r = [xd,ori]
+                env.move_right_arm(pose=pose_r)
+
+                env._dummy_sim_step(15)
+
+            env.wait(10)
+            time.sleep(2)
+            state = 2
+        
+        elif state == 2: # move inside the box
+            depth = 0.342
+            for i in range(100):
+                ori = p.getQuaternionFromEuler([0,np.pi,0])        
+                xd  = np.array([0.53,0.13,0.6-i*depth/100.0])
+                pose_l = [xd,ori]        
+                env.move_left_arm(pose=pose_l)
+                
+                xd  = [0.53,-0.13,0.6-i*depth/100.0]
+                pose_r = [xd,ori]
+                env.move_right_arm(pose=pose_r)
+                env._dummy_sim_step(100)
+
+            env.wait(10)
+            time.sleep(2)
+            state = 3
+
+        elif state == 3: # move to pre grasp
+            for i in range(100):
+                ori = p.getQuaternionFromEuler([0,np.pi,0])        
+                xd  = np.array([0.53,0.13,0.258])
+                pose_l = [xd,ori]        
+                env.move_left_arm(pose=pose_l)
+                
+                xd  = [0.53,-0.13,0.258]
+                pose_r = [xd,ori]
+                env.move_right_arm(pose=pose_r)
+                env._dummy_sim_step(10)
+            env.wait(2)
+            state = 4
+
+        elif state == 4: # grasp
+            grasp_width = 0.001
+            for i in range(1000):            
+                ori = p.getQuaternionFromEuler([0,np.pi,0])        
+                xd  = np.array([0.53,0.13-(i*grasp_width/1000.0),0.258])
+                pose_l = [xd,ori]        
+                env.move_left_arm(pose=pose_l)
+                
+                xd  = [0.53,-0.13+(i*grasp_width/1000.0),0.258]
+                pose_r = [xd,ori]
+                env.move_right_arm(pose=pose_r)
+                # env.wait(0.1)
+                env._dummy_sim_step(10)
+            env.wait(5)
+            state = 5
+        
+        elif state == 5: # lift up
+            lift = 0.3 
+            grasp_width = 0.014
+            for i in range(1000):                
+                ori = p.getQuaternionFromEuler([0,np.pi,0])        
+                xd  = np.array([0.53,0.13-grasp_width,0.25+(i*lift/1000)])
+                pose_l = [xd,ori]        
+                env.move_left_arm(pose=pose_l)
+                
+                xd  = [0.53,-0.13+grasp_width,0.25+(i*lift/1000)]
+                pose_r = [xd,ori]
+                env.move_right_arm(pose=pose_r)
+                # env.wait(0.1)
+                env._dummy_sim_step(10)
+            state = 6
+        
+        elif state == 6: # lift up
+            lift = 0.3 
+            grasp_width = 0.014
+            move_x = 0.25
+
+            for i in range(1000):                
+                ori = p.getQuaternionFromEuler([0,np.pi,0])        
+                xd  = np.array([0.53-(i*move_x/1000.0),0.13-grasp_width,0.25+lift])
+                pose_l = [xd,ori]        
+                env.move_left_arm(pose=pose_l)
+                
+                xd  = [0.53-(i*move_x/1000.0),-0.13+grasp_width,0.25+lift]
+                pose_r = [xd,ori]
+                env.move_right_arm(pose=pose_r)
+                # env.wait(0.1)
+                env._dummy_sim_step(10)
+
+            state = 7
+        elif state == 7: # lift up
+            lift = 0.3 
+            grasp_width = 0.014
+            move_x = 0.24
+            put_down = 0.20
+
+            for i in range(1000):                
+                ori = p.getQuaternionFromEuler([0,np.pi,0])        
+                xd  = np.array([0.53-move_x,0.13-grasp_width,0.25+lift-i*(put_down/1000)])
+                pose_l = [xd,ori]        
+                env.move_left_arm(pose=pose_l)
+                
+                xd  = [0.53-move_x,-0.13+grasp_width,0.25+lift-i*(put_down/1000)]
+                pose_r = [xd,ori]
+                env.move_right_arm(pose=pose_r)
+                # env.wait(0.1)
+                env._dummy_sim_step(10)
+
+            state = 8   
+        else:
+            
+            # ori = p.getQuaternionFromEuler([0,np.pi,0])        
+            # xd  = np.array([0.5,0.15,0.25])
+            # pose_l = [xd,ori]        
+            # env.move_left_arm(pose=pose_l)
+            
+            # xd  = [0.5,-0.15,0.25]
+            # pose_r = [xd,ori]
+            # env.move_right_arm(pose=pose_r)
+            
+            env._dummy_sim_step(50)
+
 
     while (True):
         gw = 1 if gw == 0 else 0
