@@ -5,10 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: HarmonyBox",
+            "name": "Python: HarmonyBox double",
             "type": "python",
             "request": "launch",
-            "module": "tests.harmony_box",
+            "module": "tests.harmony_box_double_rack",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: HarmonyBox single",
+            "type": "python",
+            "request": "launch",
+            "module": "tests.harmony_box_single_rack",
             "justMyCode": true
         },
         {

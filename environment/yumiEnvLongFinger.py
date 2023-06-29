@@ -27,6 +27,10 @@ class yumiEnvLongFinger():
         self.plane_id = p.loadURDF('plane.urdf')
         # self.load_robot(urdf = 'urdfs/yumi_grippers.urdf',print_joint_info=True)
         self.load_robot(urdf = 'urdfs/yumi_grippers_long_finger.urdf',print_joint_info=True)
+
+        self._left_FK_offset = np.array([0,0.01,0.245])
+        self._right_FK_offset = np.array([0,-0.01,0.245])
+        
         
         
         self.go_home()        
@@ -103,7 +107,7 @@ class yumiEnvLongFinger():
                             jointAxis, parentFramePos, parentFrameOrn)
 
             if info.type == "REVOLUTE" or info.type == "PRISMATIC" or True:  # set revolute joint to static
-                p.setJointMotorControl2(self.robot_id, info.id, p.POSITION_CONTROL, targetPosition=0, force=0)
+                p.setJointMotorControl2(self.robot_id, info.id, p.POSITION_CONTROL, targetPosition=0, force=300)
                 if print_joint_info:
                     print (info)
                     print (jointType)                            
@@ -131,29 +135,65 @@ class yumiEnvLongFinger():
         self._dummy_sim_step(100)
 
     def get_left_ee_state(self):
-        return p.getLinkState(self.robot_id,self._LEFT_GRIP_JOINT_IDS[-1])
+        pose = p.getLinkState(self.robot_id,self._LEFT_GRIP_JOINT_IDS[-1],computeForwardKinematics=1)[0:2]        
+        return pose[0]+self._left_FK_offset , pose[1]
     
     def get_right_ee_state(self):
-        return p.getLinkState(self.robot_id,self._RIGHT_GRIP_JOINT_IDS[-1])
+        pose =  p.getLinkState(self.robot_id,self._RIGHT_GRIP_JOINT_IDS[-1],computeForwardKinematics=1)[0:2]
+        return pose[0]+self._right_FK_offset , pose[1]
 
-    def move_left_arm(self,pose):                
-        joint_poses = p.calculateInverseKinematics(self.robot_id, self._LEFT_HAND_JOINT_IDS[-1], pose[0], pose[1])
+
+    def move_left_arm(self,traget_pose):                
+       
+        # ll = np.array([-2.8,-2.4,-0.1,-2.1,-5.0,-1.25,-3.9])
+        # ul = np.array([ 2.8, 0.7, 0.1, 1.3, 5.0, 2.25,3.9])
+        # jr = np.array([ 5.6,-1.4, 0.1,-0.8, 10.0,3.5,4.8])
+        # joint_poses = p.calculateInverseKinematics(self.robot_id, 
+        #                                            self._LEFT_HAND_JOINT_IDS[-1], 
+        #                                            traget_pose[0], traget_pose[1],
+        #                                            lowerLimits=ll,
+        #                                            upperLimits=ul,
+        #                                            jointRanges=jr)
+        
+        joint_poses = p.calculateInverseKinematics(self.robot_id, 
+                                                   self._LEFT_HAND_JOINT_IDS[-1], 
+                                                   traget_pose[0], traget_pose[1])
+
+        
+        
+        joint_poses = list(map(self._ang_in_mpi_ppi, joint_poses))
+       
+        
+        p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL,
+                                    jointIndices = self._LEFT_HAND_JOINT_IDS,
+                                    targetPositions  = joint_poses[7:14])
+    
+    def move_left_arm_lf(self,traget_pose):                
+        p0 = self.get_left_ee_state()
+
+        desired_pose = np.copy(traget_pose)
+        desired_pose[0] = 0.95*np.array(p0[0])+0.05*traget_pose[0]
+        desired_pose[1] = 0.*np.array(p0[1])+1*np.array(traget_pose[1])
+        
+
+        joint_poses = p.calculateInverseKinematics(self.robot_id, self._LEFT_HAND_JOINT_IDS[-1], desired_pose[0], desired_pose[1])
         joint_poses = list(map(self._ang_in_mpi_ppi, joint_poses))
         p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._LEFT_HAND_JOINT_IDS,targetPositions  = joint_poses[7:14])
     
-    def move_left_arm_lf(self,p1):                
-        p0 = self.get_left_ee_state()
-        pose = p1
-        pose[0] = 0.98*np.array(p0[0])+0.02*p1[0]
-        pose[1] = 0.98*np.array(p0[1])+0.02*np.array(p1[1])
+    def move_right_arm_lf(self,traget_pose):                
+        p0 = self.get_right_ee_state()
+
+        desired_pose = np.copy(traget_pose)
+        desired_pose[0] = 0.95*np.array(p0[0])+0.05*traget_pose[0]
+        desired_pose[1] = 0.*np.array(p0[1])+1*np.array(traget_pose[1])
         
 
-        joint_poses = p.calculateInverseKinematics(self.robot_id, self._LEFT_HAND_JOINT_IDS[-1], pose[0], pose[1])
+        joint_poses = p.calculateInverseKinematics(self.robot_id, self._RIGHT_HAND_JOINT_IDS[-1], desired_pose[0], desired_pose[1])
         joint_poses = list(map(self._ang_in_mpi_ppi, joint_poses))
-        p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._LEFT_HAND_JOINT_IDS,targetPositions  = joint_poses[7:14])
+        p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._RIGHT_HAND_JOINT_IDS,targetPositions  = joint_poses[:7], )
 
-    def move_right_arm(self,pose):        
-        joint_poses = p.calculateInverseKinematics(self.robot_id, self._RIGHT_HAND_JOINT_IDS[-1], pose[0], pose[1])
+    def move_right_arm(self,traget_pose):        
+        joint_poses = p.calculateInverseKinematics(self.robot_id, self._RIGHT_HAND_JOINT_IDS[-1], traget_pose[0], traget_pose[1])
         joint_poses = list(map(self._ang_in_mpi_ppi, joint_poses))
 
         p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._RIGHT_HAND_JOINT_IDS,targetPositions  = joint_poses[:7], )

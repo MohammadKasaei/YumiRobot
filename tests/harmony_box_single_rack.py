@@ -45,13 +45,13 @@ if __name__ == '__main__':
             ori = p.getQuaternionFromEuler([0,np.pi,0])        
             xd  = np.array([0.5,0.4,0.6])
             pose_l = [xd,ori]        
-            env.move_left_arm(pose=pose_l)
+            env.move_left_arm(traget_pose=pose_l)
             # env.move_left_arm_lf(pose_l)
             
             
             xd  = [0.5,-0.4,0.6]
             pose_r = [xd,ori]
-            env.move_right_arm(pose=pose_r)
+            env.move_right_arm(traget_pose=pose_r)
 
             env.wait(10)
             state = 1
@@ -64,11 +64,11 @@ if __name__ == '__main__':
                 xd  = np.array([0.5,0.4-(i*move_y/1000.0),0.6])
                 
                 pose_l = [xd,ori]        
-                env.move_left_arm(pose=pose_l)
+                env.move_left_arm(traget_pose=pose_l)
                 
                 xd  = [0.5,-0.4+(i*move_y/1000.0),0.6]
                 pose_r = [xd,ori]
-                env.move_right_arm(pose=pose_r)
+                env.move_right_arm(traget_pose=pose_r)
 
                 env._dummy_sim_step(15)
 
@@ -82,11 +82,11 @@ if __name__ == '__main__':
                 ori = p.getQuaternionFromEuler([0,np.pi,0])        
                 xd  = np.array([0.53,0.13,0.6-i*depth/100.0])
                 pose_l = [xd,ori]        
-                env.move_left_arm(pose=pose_l)
+                env.move_left_arm(traget_pose=pose_l)
                 
                 xd  = [0.53,-0.13,0.6-i*depth/100.0]
                 pose_r = [xd,ori]
-                env.move_right_arm(pose=pose_r)
+                env.move_right_arm(traget_pose=pose_r)
                 env._dummy_sim_step(100)
 
             env.wait(10)
@@ -98,11 +98,11 @@ if __name__ == '__main__':
                 ori = p.getQuaternionFromEuler([0,np.pi,0])        
                 xd  = np.array([0.53,0.13,0.258])
                 pose_l = [xd,ori]        
-                env.move_left_arm(pose=pose_l)
+                env.move_left_arm(traget_pose=pose_l)
                 
                 xd  = [0.53,-0.13,0.258]
                 pose_r = [xd,ori]
-                env.move_right_arm(pose=pose_r)
+                env.move_right_arm(traget_pose=pose_r)
                 env._dummy_sim_step(10)
             env.wait(2)
             state = 4
@@ -113,11 +113,11 @@ if __name__ == '__main__':
                 ori = p.getQuaternionFromEuler([0,np.pi,0])        
                 xd  = np.array([0.53,0.13-(i*grasp_width/1000.0),0.258])
                 pose_l = [xd,ori]        
-                env.move_left_arm(pose=pose_l)
+                env.move_left_arm(traget_pose=pose_l)
                 
                 xd  = [0.53,-0.13+(i*grasp_width/1000.0),0.258]
                 pose_r = [xd,ori]
-                env.move_right_arm(pose=pose_r)
+                env.move_right_arm(traget_pose=pose_r)
                 # env.wait(0.1)
                 env._dummy_sim_step(10)
             env.wait(5)
@@ -130,11 +130,11 @@ if __name__ == '__main__':
                 ori = p.getQuaternionFromEuler([0,np.pi,0])        
                 xd  = np.array([0.53,0.13-grasp_width,0.25+(i*lift/1000)])
                 pose_l = [xd,ori]        
-                env.move_left_arm(pose=pose_l)
+                env.move_left_arm(traget_pose=pose_l)
                 
                 xd  = [0.53,-0.13+grasp_width,0.25+(i*lift/1000)]
                 pose_r = [xd,ori]
-                env.move_right_arm(pose=pose_r)
+                env.move_right_arm(traget_pose=pose_r)
                 # env.wait(0.1)
                 env._dummy_sim_step(10)
             state = 6
@@ -148,11 +148,11 @@ if __name__ == '__main__':
                 ori = p.getQuaternionFromEuler([0,np.pi,0])        
                 xd  = np.array([0.53-(i*move_x/1000.0),0.13-grasp_width,0.25+lift])
                 pose_l = [xd,ori]        
-                env.move_left_arm(pose=pose_l)
+                env.move_left_arm(traget_pose=pose_l)
                 
                 xd  = [0.53-(i*move_x/1000.0),-0.13+grasp_width,0.25+lift]
                 pose_r = [xd,ori]
-                env.move_right_arm(pose=pose_r)
+                env.move_right_arm(traget_pose=pose_r)
                 # env.wait(0.1)
                 env._dummy_sim_step(10)
 
@@ -167,11 +167,11 @@ if __name__ == '__main__':
                 ori = p.getQuaternionFromEuler([0,np.pi,0])        
                 xd  = np.array([0.53-move_x,0.13-grasp_width,0.25+lift-i*(put_down/1000)])
                 pose_l = [xd,ori]        
-                env.move_left_arm(pose=pose_l)
+                env.move_left_arm(traget_pose=pose_l)
                 
                 xd  = [0.53-move_x,-0.13+grasp_width,0.25+lift-i*(put_down/1000)]
                 pose_r = [xd,ori]
-                env.move_right_arm(pose=pose_r)
+                env.move_right_arm(traget_pose=pose_r)
                 # env.wait(0.1)
                 env._dummy_sim_step(10)
 
