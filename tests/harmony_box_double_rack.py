@@ -222,7 +222,7 @@ if __name__ == '__main__':
             move_x      = 0.18 if target_rack ==1 else 0.18 + 0.12
 
             for i in range(1000):                
-                ori = p.getQuaternionFromEuler([0,np.pi-0.15,0])        
+                ori = p.getQuaternionFromEuler([0,np.pi,0])        
                 xd  = np.array([init_x-(i*move_x/1000.0),0.13-grasp_width,0.25+lift])
                 pose_l = [xd,ori]        
                 env.move_left_arm(traget_pose=pose_l)
@@ -243,7 +243,7 @@ if __name__ == '__main__':
             put_down    = 0.04
  
             for i in range(1000):                
-                ori = p.getQuaternionFromEuler([-0,np.pi-0.15,0])        
+                ori = p.getQuaternionFromEuler([-0,np.pi,0])        
                 xd  = np.array([init_x-move_x-(putdown_x*i/1000),0.13-grasp_width,0.25+lift-i*(put_down/1000)])
                 pose_l = [xd,ori]        
                 env.move_left_arm(traget_pose=pose_l)
