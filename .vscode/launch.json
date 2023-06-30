@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: HarmonyBox Spatula",
+            "type": "python",
+            "request": "launch",
+            "module": "tests.harmony_box_double_rack_spatula",
+            "justMyCode": true
+        },
+        {
             "name": "Python: HarmonyBox double",
             "type": "python",
             "request": "launch",
