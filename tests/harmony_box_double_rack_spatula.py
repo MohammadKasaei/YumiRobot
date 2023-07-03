@@ -14,269 +14,93 @@ from graspGenerator.grasp_generator import GraspGenerator
 
 from environment.yumiEnvSpatula import yumiEnvSpatula
         
+import numpy as np
+
+
 
 if __name__ == '__main__':
 
     env = yumiEnvSpatula()
-    
-    env.create_harmony_box(box_centre=[0.5,0.])
-    # box_centre=[0.5,0.]
-    # box_width = 0.1
-    # box_z = 0.05
-    # p.loadURDF(f"objects/rack/urdf/rack_red.urdf",
-    #                      [box_centre[0] - box_width / 2.0, box_centre[1], box_z],
-    #                      p.getQuaternionFromEuler([0, 0, 0]),
-    #                      useFixedBase=True)
-    
+    env.create_karolinska_env()
+    time.sleep(5)
 
-    env.add_a_cube(pos=[0.5,0,0.04],size=[0.33,0.12,0.04],color=[0.1,0.1,0.1,1],mass=5)
-    env.add_a_cube_without_collision(pos=[0.5,0,0.03],size=[0.34,0.28,0.03],color=[0.1,0.1,0.1,1])
-    
-    
-    # env.add_a_rack(centre=[0.42,0.0,0.05])
-    # env.add_a_rack(centre=[0.55,0.0,0.05],color=[0,1,0,1])
-    env.add_red_rack(centre=[0.52,0.0,0.2])
-    env.add_green_rack(centre=[0.64,0.0,0.2])
-    
+    # # Example usage
+    # start_pos = 0.0
+    # end_pos = 10.0
+    # start_vel = 0.0
+    # end_vel = 0.0
+    # start_acc = 0.0
+    # end_acc = 0.0
+    # duration = 5.0
+    # dt = 0.1
 
-    # env.add_a_rack(centre=[0.67,0.0,0.05],color=[0,1,0,1])
-    
-    # env.visualize_camera_position()
-    
+    # t, pos, vel, acc = env.fifth_order_trajectory_planner(start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
 
+
+    # Example usage
+    # start_pos = np.array([0.0, 0.0, 0.0])
+    # end_pos = np.array([10.0, 5.0, 3.0])
+    # start_vel = np.array([1.0, 0.0, 0.0])
+    # end_vel = np.array([0.0, 0.0, 1.0])
+    # start_acc = np.array([0.0, 0.0, 0.0])
+    # end_acc = np.array([0.0, 0.0, 0.0])
+    # duration = 5.0
+    # dt = 0.1
+
+    # t, x_pos, y_pos, z_pos, x_vel, y_vel, z_vel, x_acc, y_acc, z_acc = env.fifth_order_trajectory_planner_3d(start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
+
+
+
+   
     gw = 0
     gt = 0
     x0 = np.array([0., 0.0 , 0.25])
 
     # time.sleep(10)
-    env.go_home()
+    env.reset_robot()
     env.wait(20)
-    state = -1         
-    # while (True):
+    state = -1     
+    target_rack = 1    
 
-    #     if state == -1:
-    #         for i in range(1000):
-    #             ori = p.getQuaternionFromEuler([0,np.pi-0.01,0])        
-    #             xd  = np.array([0.5,0.4,0.5])
-    #             pose_l = [xd,ori]        
-    #             env.move_left_arm(traget_pose=pose_l)
-    #             env._dummy_sim_step(10)
-    #             pos = env.get_left_ee_state()[0]
-    #             # print(f"L:\t{pos[0]:3.3f}\t{pos[1]:3.3f}\t{pos[2]:3.3f}")
-
-    #         state = 0
-
-    #     if state == 0:
-    #         for i in range(1000):
-    #             ori = p.getQuaternionFromEuler([0,np.pi-0.01,0])        
-    #             xd  = np.array([0.6,0.4,0.5])
-    #             pose_l = [xd,ori]        
-    #             env.move_left_arm(traget_pose=pose_l)
-    #             env._dummy_sim_step(10)
-    #             pos = env.get_left_ee_state()[0]
-    #             # print(f"L:\t{pos[0]:3.3f}\t{pos[1]:3.3f}\t{pos[2]:3.3f}")
-
-    #         state = -1
-
-        # elif state == 1:
-        #     for i in range(10000):    
-        #         xd  = np.array([0.5,-0.4,0.5])
-        #         pose_l = [xd,ori]        
-        #         env.move_right_arm(traget_pose=pose_l)
-        #         env._dummy_sim_step(1)
-        #         pos = env.get_right_ee_state()[0]
-        #         # print(f"R:\t{pos[0]:3.3f}\t{pos[1]:3.3f}\t{pos[2]:3.3f}")
-        #     state = 2   
-        
-        # elif state == 2:
-        #     for i in range(10000):    
-        #         xd  = np.array([0.6,-0.4,0.5])
-        #         pose_l = [xd,ori]        
-        #         env.move_right_arm(traget_pose=pose_l)
-        #         env._dummy_sim_step(1)
-        #         pos = env.get_right_ee_state()[0]
-        #         # print(f"R:\t{pos[0]:3.3f}\t{pos[1]:3.3f}\t{pos[2]:3.3f}")
-        #     state = -1
-
-    state = -1 
     while (True):
 
-        if state == -1 : # initialize 
-            state = 0            
-            target_rack = 1
-            for i in range(100):
-                ori = p.getQuaternionFromEuler([0,np.pi,0])        
-                xd  = np.array([0.5,0.3,0.5])
-                pose_l = [xd,ori]        
-                env.move_left_arm_lf(traget_pose=pose_l)
-                env._dummy_sim_step(1)
-                pos = env.get_left_ee_state()[0]
-                # print(f"L:\t{pos[0]:3.3f}\t{pos[1]:3.3f}\t{pos[2]:3.3f}")
 
-                xd  = np.array([0.5,-0.3,0.5])
-                pose_l = [xd,ori]        
-                env.move_right_arm_lf(traget_pose=pose_l)
-                env._dummy_sim_step(1)
-                pos = env.get_right_ee_state()[0]
-                # print(f"R:\t{pos[0]:3.3f}\t{pos[1]:3.3f}\t{pos[2]:3.3f}")
-            
-        elif state == 0 : # go home
+        if state == -1:            
             env.go_home()
-            env.wait(20)
-            for i in range(1000):
-                ori = p.getQuaternionFromEuler([0,np.pi,0])        
-                xd  = np.array([0.42,0.3,0.5])
-                pose_l = [xd,ori]        
-                env.move_left_arm_lf(traget_pose=pose_l)
-                xd  = np.array([0.42,-0.3,0.5])
-                pose_r = [xd,ori]
-                env.move_right_arm_lf(traget_pose=pose_r)
-                env._dummy_sim_step(10)
+            state = 0
 
-            env.wait(10)
-            state = 1
-            # target_rack = 1
-            # target_rack = 2
-            
-
-        elif state == 1: # move on top of the box
-            if target_rack == 1:
-                init_x = 0.42
-            else:
-                init_x = 0.535
-
-            move_y = 0.175 
-
-            for i in range(1000):
-                ori = p.getQuaternionFromEuler([0,np.pi,0])        
-                # xd  = np.array([0.5,0.14,0.6])
-                xd  = np.array([init_x,0.3-(i*move_y/1000.0),0.5])
-                
-                pose_l = [xd,ori]        
-                env.move_left_arm_lf(traget_pose=pose_l)
-                
-                xd  = np.array([init_x,-0.3+(i*move_y/1000.0),0.5])
-                pose_r = [xd,ori]
-                env.move_right_arm_lf(traget_pose=pose_r)
-
-                env._dummy_sim_step(15)
-
-            env.wait(10)
-            time.sleep(2)
+        elif state == 0: # move on top of the box
+            env.go_on_top_of_box()
+            env.wait(1)
+            # time.sleep(2)
             state = 2
         
         elif state == 2: # move inside the box
-            depth = 0.25
-
-            for i in range(100):
-                ori    = p.getQuaternionFromEuler([0,np.pi,0])        
-                xd     = np.array([init_x,0.3-move_y,0.5-i*depth/100.0])
-                pose_l = [xd,ori]        
-                env.move_left_arm(traget_pose=pose_l)
-                
-                xd     = np.array([init_x,-(0.3-move_y),0.5-i*depth/100.0])
-                pose_r = [xd,ori]
-                env.move_right_arm(traget_pose=pose_r)
-                env._dummy_sim_step(100)
-
-            env.wait(10)
-            time.sleep(2)
-            state = 3
-
-        elif state == 3: # move to pre grasp
-            for i in range(100):
-                ori     = p.getQuaternionFromEuler([0,np.pi,0])        
-                xd      = np.array([init_x,(0.3-move_y),0.5-depth])
-                pose_l  = [xd,ori]        
-                env.move_left_arm(traget_pose=pose_l)
-                
-                xd  = np.array([init_x,-(0.3-move_y),0.5-depth])
-                pose_r = [xd,ori]
-                env.move_right_arm(traget_pose=pose_r)
-                env._dummy_sim_step(10)
-            env.wait(2)
+            env.go_inside_box()
+            env.wait(1)
             state = 4
 
         elif state == 4: # grasp
-            grasp_width = 0.019
-            for i in range(1000):            
-                ori = p.getQuaternionFromEuler([0,np.pi,0])        
-                xd  = np.array([init_x,(0.3-move_y)-(i*grasp_width/1000.0),0.5-depth])
-                pose_l = [xd,ori]        
-                env.move_left_arm(traget_pose=pose_l)
-                
-                xd  = np.array([init_x,-(0.3-move_y)+(i*grasp_width/1000.0),0.5-depth])
-                pose_r = [xd,ori]
-                env.move_right_arm(traget_pose=pose_r)
-                # env.wait(0.1)
-                env._dummy_sim_step(10)
+            env.grasp()
             env.wait(5)
             state = 5
         
         elif state == 5: # lift up
-            lift = 0.25
-            grasp_width = 0.019
-            for i in range(1000):                
-                ori = p.getQuaternionFromEuler([0,np.pi,0])        
-                xd  = np.array([init_x,(0.3-move_y)-grasp_width,0.5-depth+(i*lift/1000)])
-                pose_l = [xd,ori]        
-                env.move_left_arm(traget_pose=pose_l)
-                
-                xd  = np.array([init_x,-(0.3-move_y)+grasp_width,0.5-depth+(i*lift/1000)])
-                pose_r = [xd,ori]
-                env.move_right_arm(traget_pose=pose_r)
-                # env.wait(0.1)
-                env._dummy_sim_step(10)
+            env.lift_up()
             state = 6
         
         elif state == 6: # move the rack towards the robot
-            lift        = 0.25
-            grasp_width = 0.019
-            move_x      = -0.15 if target_rack ==1 else 0.12 + 0.12
-            move_y2     = 0.2 if target_rack ==1 else 0.12 + 0.12
-            
-
-            for i in range(1000):                
-                ori = p.getQuaternionFromEuler([0,np.pi,0])        
-                xd  = np.array([init_x-(i*move_x/1000.0),(0.3-move_y)-grasp_width+(i*move_y2/1000.0),0.5-depth+lift])
-                pose_l = [xd,ori]        
-                env.move_left_arm(traget_pose=pose_l)
-                
-                xd  = np.array([init_x-(i*move_x/10000.0),-(0.3-move_y)+grasp_width,0.5-depth+lift])
-                pose_r = [xd,ori]
-                env.move_right_arm(traget_pose=pose_r)
-                # env.wait(0.1)
-                env._dummy_sim_step(10)
-
+            env.move_racks_to_station()
             state = 7
 
         elif state == 7: # put down
-            lift        = 0.25
-            grasp_width = 0.019
-            move_x      = 0.2 if target_rack == 1 else 0.12 + 0.12
-            putdown_x   = 0.0        
-            put_down    = 0.0
- 
-            for i in range(1000):                
-                ori = p.getQuaternionFromEuler([-0,np.pi,0])        
-                xd  = np.array([init_x-(i*move_x/1000.0)-(putdown_x*i/1000),(0.3-move_y)-grasp_width+move_y2,0.5-depth+lift-i*(put_down/1000)])
-                pose_l = [xd,ori]        
-                env.move_left_arm(traget_pose=pose_l)
-                
-                xd  = np.array([init_x-(i*move_x/1000.0)-(putdown_x*i/1000),-(0.3-move_y)+grasp_width,0.5-depth+lift-i*(put_down/1000)])
-                pose_r = [xd,ori]
-                env.move_right_arm(traget_pose=pose_r)
-                # env.wait(0.1)
-                env._dummy_sim_step(10)
-            state = 8   
+            env.place_racks_to_station()
+            env.release_racks()
+            env.release_arms()
+            env.go_home()
 
-        elif state == 8:
-           
-            if target_rack == 1:
-                target_rack = 2
-                state       = 0
-            else:
-                state = 9
+            state = 10   #stop
+
         else:
             
             # ori = p.getQuaternionFromEuler([0,np.pi,0])        
