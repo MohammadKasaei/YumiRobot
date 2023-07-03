@@ -23,40 +23,6 @@ if __name__ == '__main__':
     env = yumiEnvSpatula()
     env.create_karolinska_env()
     time.sleep(5)
-
-    # # Example usage
-    # start_pos = 0.0
-    # end_pos = 10.0
-    # start_vel = 0.0
-    # end_vel = 0.0
-    # start_acc = 0.0
-    # end_acc = 0.0
-    # duration = 5.0
-    # dt = 0.1
-
-    # t, pos, vel, acc = env.fifth_order_trajectory_planner(start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
-
-
-    # Example usage
-    # start_pos = np.array([0.0, 0.0, 0.0])
-    # end_pos = np.array([10.0, 5.0, 3.0])
-    # start_vel = np.array([1.0, 0.0, 0.0])
-    # end_vel = np.array([0.0, 0.0, 1.0])
-    # start_acc = np.array([0.0, 0.0, 0.0])
-    # end_acc = np.array([0.0, 0.0, 0.0])
-    # duration = 5.0
-    # dt = 0.1
-
-    # t, x_pos, y_pos, z_pos, x_vel, y_vel, z_vel, x_acc, y_acc, z_acc = env.fifth_order_trajectory_planner_3d(start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
-
-
-
-   
-    gw = 0
-    gt = 0
-    x0 = np.array([0., 0.0 , 0.25])
-
-    # time.sleep(10)
     env.reset_robot()
     env.wait(20)
     state = -1     
