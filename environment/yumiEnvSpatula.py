@@ -28,7 +28,7 @@ class yumiEnvSpatula():
         p.configureDebugVisualizer(p.COV_ENABLE_DEPTH_BUFFER_PREVIEW,0)
         p.configureDebugVisualizer(p.COV_ENABLE_SEGMENTATION_MARK_PREVIEW,0)
         p.configureDebugVisualizer(p.COV_ENABLE_GUI,0)
-        p.resetDebugVisualizerCamera(cameraDistance=1.3, cameraYaw=90, cameraPitch=-35, cameraTargetPosition=[0,0,0])
+        p.resetDebugVisualizerCamera(cameraDistance=1.3, cameraYaw=90, cameraPitch=-40, cameraTargetPosition=[0,0,0])
 
         # sim_arg = {'gui':'True'}
         self.plane_id = p.loadURDF('plane.urdf')
@@ -296,8 +296,9 @@ class yumiEnvSpatula():
             
             self._dummy_sim_step(1)
                         
-    def go_inside_box(self):
-        depth = 0.25
+    def go_inside_box(self,racks_level):
+        
+        depth = 0.26 if racks_level == 2 else 0.33
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
         end_pos = np.array([0.5,0.145,depth])
@@ -329,17 +330,17 @@ class yumiEnvSpatula():
             
             self._dummy_sim_step(1)
 
-    def grasp(self):
-        depth = 0.25
+    def grasp(self,racks_level):
+        depth =  0.26 if racks_level == 2 else 0.33
         grasp_width = 0.043
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
         end_pos = np.array([0.5,0.145-grasp_width ,depth])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
-        start_acc = np.array([0.0, 0.02, 0.0])
-        end_acc = np.array([0.0, 0.02, 0.0])
-        duration = 0.1
+        start_acc = np.array([0.0, 0.004, 0.0])
+        end_acc = np.array([0.0, 0.004, 0.0])
+        duration = 0.5
         dt = 0.005
         t, xl_pos, yl_pos, zl_pos, xl_vel, yl_vel, zl_vel, xl_acc, yl_acc, zl_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
@@ -364,7 +365,7 @@ class yumiEnvSpatula():
             self._dummy_sim_step(1)
     
     def lift_up(self):
-        grasp_width = 0.035
+        grasp_width = 0.05
         lift_up = 0.5
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
@@ -397,11 +398,11 @@ class yumiEnvSpatula():
             
             self._dummy_sim_step(1)
 
-    def move_racks_to_station(self):
-        
+    def move_racks_to_station(self,racks_level):
+        station_x = 0.1 if racks_level== 1 else -0.05 
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([-0.1,0.4,0.5])
+        end_pos = np.array([-station_x,0.4,0.5])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
@@ -414,7 +415,7 @@ class yumiEnvSpatula():
         
         p0,o0 = self.get_right_ee_state()
         start_pos = p0
-        end_pos = np.array([-0.1,-0.45,0.5])        
+        end_pos = np.array([-station_x,-0.45,0.5])        
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
@@ -431,11 +432,12 @@ class yumiEnvSpatula():
             
             self._dummy_sim_step(1)         
 
-    def place_racks_to_station(self):
+    def place_racks_to_station(self,racks_level):
         
+        station_x = 0.2 if racks_level== 1 else -0.05
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([-0.2,0.33,0.33])
+        end_pos = np.array([-station_x,0.33,0.33])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
@@ -448,7 +450,7 @@ class yumiEnvSpatula():
         
         p0,o0 = self.get_right_ee_state()
         start_pos = p0
-        end_pos = np.array([-0.2,-0.33,0.33])        
+        end_pos = np.array([-station_x,-0.33,0.33])        
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
@@ -465,10 +467,11 @@ class yumiEnvSpatula():
             
             self._dummy_sim_step(1)     
 
-    def release_racks(self):
+    def release_racks(self,racks_level):
+        station_x = 0.2 if racks_level== 1 else -0.05
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([-0.2,0.33,0.27])
+        end_pos = np.array([-station_x,0.33,0.27])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
@@ -481,7 +484,7 @@ class yumiEnvSpatula():
         
         p0,o0 = self.get_right_ee_state()
         start_pos = p0
-        end_pos = np.array([-0.2,-0.33,0.27])        
+        end_pos = np.array([-station_x,-0.33,0.27])        
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
@@ -499,10 +502,11 @@ class yumiEnvSpatula():
             self._dummy_sim_step(1)                             
         
 
-    def release_arms(self):
+    def release_arms(self,racks_level):
+        station_x = 0.2 if racks_level== 1 else -0.05
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([-0.2,0.38,0.27])
+        end_pos = np.array([-station_x,0.38,0.27])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
@@ -515,7 +519,7 @@ class yumiEnvSpatula():
         
         p0,o0 = self.get_right_ee_state()
         start_pos = p0
-        end_pos = np.array([-0.2,-0.38,0.27])        
+        end_pos = np.array([-station_x,-0.38,0.27])        
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
@@ -653,7 +657,10 @@ class yumiEnvSpatula():
 
     def add_red_rack(self,centre):
         rack_width = 0.2
-        obj_id = p.loadURDF(f"objects/rack/urdf/rack_red.urdf",
+        # obj_id = p.loadURDF(f"objects/rack/urdf/rack_red.urdf",
+        #                 [centre[0] - rack_width / 2.0, centre[1], centre[2]],
+        #                 p.getQuaternionFromEuler([0, 0, np.pi/2]))
+        obj_id = p.loadURDF(f"objects/rack/urdf/rack_red_with_tubes.urdf",
                         [centre[0] - rack_width / 2.0, centre[1], centre[2]],
                         p.getQuaternionFromEuler([0, 0, np.pi/2]))
         return obj_id
@@ -661,23 +668,30 @@ class yumiEnvSpatula():
 
     def add_green_rack(self,centre):
         rack_width = 0.2
-        obj_id = p.loadURDF(f"objects/rack/urdf/rack_green.urdf",
+        # obj_id = p.loadURDF(f"objects/rack/urdf/rack_green.urdf",
+        #                 [centre[0] - rack_width / 2.0, centre[1], centre[2]],
+        #                 p.getQuaternionFromEuler([0, 0, np.pi/2]))
+        obj_id = p.loadURDF(f"objects/rack/urdf/rack_green_with_tubes.urdf",
                         [centre[0] - rack_width / 2.0, centre[1], centre[2]],
                         p.getQuaternionFromEuler([0, 0, np.pi/2]))
+        
         return obj_id
 
     def create_karolinska_env(self):
         self.create_harmony_box(box_centre=[0.5,0.])
-        self.add_a_cube(pos=[0.5,0,0.04],size=[0.285,0.16,0.04],color=[0.1,0.1,0.1,1],mass=50)
+        self.add_a_cube(pos=[0.5,0,0.04],size=[0.285,0.17,0.04],color=[0.1,0.1,0.1,1],mass=50)
         self.add_a_cube_without_collision(pos=[0.5,0,0.04],size=[0.285,0.32,0.04],color=[0.1,0.1,0.1,1])
 
-        self.add_a_cube(pos=[-0.1,0.255,0.1],size =[0.5,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
-        self.add_a_cube(pos=[-0.1,-0.255,0.1],size=[0.5,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
+        self.add_a_cube(pos=[-0.1,0.255,0.1],size =[0.55,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
+        self.add_a_cube(pos=[-0.1,-0.255,0.1],size=[0.55,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
         self.wait(1)
         self.add_red_rack(centre=[0.6,0.06,0.2])
-        self.add_green_rack(centre=[0.6,-0.06,0.2])
+        self.add_green_rack(centre=[0.6,-0.06,0.2])        
         self.wait(1)
-    
+        self.add_red_rack(centre=[0.6,0.06,0.3])
+        self.add_green_rack(centre=[0.6,-0.06,0.3])        
+        self.wait(1)
+        
     
     def visualize_camera_position(self):
             camPos = self._camera_pos

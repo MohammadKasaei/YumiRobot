@@ -12,6 +12,13 @@
             "justMyCode": true
         },
         {
+            "name": "Python: HarmonyBox Spatula - 4 racks",
+            "type": "python",
+            "request": "launch",
+            "module": "tests.harmony_box_four_rack_spatula",
+            "justMyCode": true
+        },
+        {
             "name": "Python: HarmonyBox double",
             "type": "python",
             "request": "launch",
