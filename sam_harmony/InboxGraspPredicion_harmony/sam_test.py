@@ -58,7 +58,7 @@ sam.to(device=device)
 mask_generator1 = SamAutomaticMaskGenerator(sam, points_per_batch=16)
 predictor = SamPredictor(sam)
 
-image_path = "InboxGraspPredicion_harmony/images/racks/photo_2023-06-13_11-44-18.jpg"
+image_path = "sam_harmony/InboxGraspPredicion_harmony/images/simImgs/rgbtest20230704-151403.png"
 # image_information = cv2.imread(image_path)
 # image = cv2.resize(image_information, (224,224))
 image = cv2.imread(image_path)

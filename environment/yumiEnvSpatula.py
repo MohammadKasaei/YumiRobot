@@ -727,7 +727,7 @@ class yumiEnvSpatula():
         rgbim = Image.fromarray(bgr)
         # depim = Image.fromarray(bgr)
         timestr = time.strftime("%Y%m%d-%H%M%S")
-        rgbim.save('savedImages/rgbtest'+timestr+'.png')
+        rgbim.save('sam_harmony/InboxGraspPredicion_harmony/images/simImgs/rgbtest'+timestr+'.png')
 
     def creat_pile_of_tubes(self,number_of_tubes):
         obj_init_pos = [0.4, -0.]

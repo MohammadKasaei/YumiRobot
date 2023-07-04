@@ -22,7 +22,7 @@ import numpy as np
 if __name__ == '__main__':
 
     env = yumiEnvSpatula()
-    # obj_detection = InboxGraspPrediction() 
+    obj_detection = InboxGraspPrediction() 
     env.create_karolinska_env()
     time.sleep(5)
     env.reset_robot()
@@ -38,7 +38,7 @@ if __name__ == '__main__':
 
         elif state == 0: # move on top of the box
             bgr, depth = env.capture_image()
-            # env.save_image(bgr)        
+            env.save_image(bgr)        
             env.go_on_top_of_box()
         
             env.go_on_top_of_box()

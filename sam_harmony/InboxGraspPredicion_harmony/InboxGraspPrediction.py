@@ -26,11 +26,11 @@ class InboxGraspPrediction():
         self._sam_model_type = sam_model
         self._device = device
         if self._sam_model_type == "vit_b":   # 375 MB         
-            self._sam_checkpoint = 'models/sam_vit_b_01ec64.pth'
+            self._sam_checkpoint = 'sam_harmony/models/sam_vit_b_01ec64.pth'
         elif self._sam_model_type == "vit_h": # 2.6 GB           
-            self._sam_checkpoint = 'models/sam_vit_h_4b8939.pth'
+            self._sam_checkpoint = 'sam_harmony/models/sam_vit_h_4b8939.pth'
         else: #1.2 GB
-            self._sam_checkpoint = 'models/sam_vit_l_0b3195.pth'
+            self._sam_checkpoint = 'sam_harmony/models/sam_vit_l_0b3195.pth'
 
         self._device = device
 
@@ -51,11 +51,11 @@ class InboxGraspPrediction():
         mask_image = mask.reshape(h, w, 1) * color.reshape(1, 1, -1)
         ax.imshow(mask_image)
         
-    def show_points(self,coords, labels, ax, marker_size=375):
+    def show_points(self,coords, labels, ax, marker_size=25):
         pos_points = coords[labels==1]
         neg_points = coords[labels==0]
-        ax.scatter(pos_points[:, 0], pos_points[:, 1], color='green', marker='*', s=marker_size, edgecolor='white', linewidth=1.25)
-        ax.scatter(neg_points[:, 0], neg_points[:, 1], color='red', marker='*', s=marker_size, edgecolor='white', linewidth=1.25)   
+        ax.scatter(pos_points[:, 0], pos_points[:, 1], color='green', marker='*', s=marker_size, edgecolor='green', linewidth=1.25)
+        ax.scatter(neg_points[:, 0], neg_points[:, 1], color='red', marker='*', s=marker_size, edgecolor='red', linewidth=1.25)   
         
     def show_box(self,box, ax):
         x0, y0 = box[0], box[1]
@@ -63,10 +63,10 @@ class InboxGraspPrediction():
         ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0,0,0,0), lw=2))    
 
     def config(self):
-        input_point1 = np.array([400,500]).reshape(1,2)
-        input_point2 = np.array([400,700]).reshape(1,2)
-        # step_x = 100
-        # step_y = 50
+        # input_point1 = np.array([300,200]).reshape(1,2)
+        # input_point2 = np.array([300,260]).reshape(1,2)
+        # step_x = 30
+        # step_y = 10
         # for i in range(3):
         #     for j in range(3):
         #         input_point1 = np.vstack((input_point1,(input_point1[0,0]+i*step_x,input_point1[0,1]+j*step_y)))
@@ -74,15 +74,42 @@ class InboxGraspPrediction():
         # self._input_point = np.vstack((input_point1,input_point2))
         # self._input_label = np.ones(20)
 
+        input_point1 = np.array([300,200]).reshape(1,2)
+        step_x = 25
+        step_y = 15
+        for i in range(3):
+            for j in range(6):
+                input_point1 = np.vstack((input_point1,(input_point1[0,0]+i*step_x,input_point1[0,1]+j*step_y)))
+        
+        self._input_point = input_point1        
+        self._input_label = np.ones(19)
+        
+        # remove regions
+        remove_point_start = np.array([200,100]).reshape(1,2)
+        step_x = 50
+        step_y = 50
+        for i in range(6):
+            for j in range(6):
+                input_point1 = np.vstack((input_point1,(remove_point_start[0,0]+i*step_x,remove_point_start[0,1]+j*step_y)))
 
-        centre_point = np.array([600,800]).reshape(1,2)
-        lim_x = 50
-        lim_y = 50
-        for i in range(9):
-                centre_point = np.vstack((centre_point,(centre_point[0,0]+int(np.random.uniform(-lim_x,lim_x)),centre_point[0,1]+int(np.random.uniform(-lim_y,lim_y)))))
-        input_point1 = centre_point
-        self._input_point = np.vstack((input_point1,input_point2))
-        self._input_label = np.ones(11)
+
+        self._input_point = input_point1        
+        self._input_label = np.ones(len(input_point1))
+
+        self._input_label[19:] *= 0
+
+
+        # remove regions
+
+
+        # centre_point = np.array([330,240]).reshape(1,2)
+        # lim_x = 20
+        # lim_y = 20
+        # for i in range(9):
+        #         centre_point = np.vstack((centre_point,(centre_point[0,0]+int(np.random.uniform(-lim_x,lim_x)),centre_point[0,1]+int(np.random.uniform(-lim_y,lim_y)))))
+        # input_point1 = centre_point
+        # self._input_point = np.vstack((input_point1,input_point2))
+        # self._input_label = np.ones(11)
         
 
     def generate_masks(self,image_path):
@@ -90,7 +117,9 @@ class InboxGraspPrediction():
         self.image_raw = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
 
         kernel = np.ones((5,5),np.float32) / 30
-        self.image = cv2.filter2D(self.image_raw,-1,kernel)
+        # self.image = cv2.filter2D(self.image_raw,-1,kernel)
+        self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
+
 
         self._predictor.set_image(self.image)
         self._masks, self._scores, self._logits = self._predictor.predict(
@@ -131,11 +160,11 @@ class InboxGraspPrediction():
                 center2 = np.int16(((bs[2,0]+bs[3,0])/2,(bs[2,1]+bs[3,1])/2))        
                 grasp_list.append ([center,center1,center2])
                 if vis:
-                    cv2.drawContours(gs.image, contours, j, (0, 255, 0), thickness)                
-                    cv2.drawContours(gs.image,[box],0,(0,255,255),5)
-                    cv2.circle(gs.image, center=center, radius=30, color = (255,255,255), thickness=-1) 
-                    cv2.circle(gs.image, center=center1, radius=30, color = (255,0,255), thickness=10) 
-                    cv2.circle(gs.image, center=center2, radius=30, color = (255,0,255), thickness=10) 
+                    cv2.drawContours(gs.image, contours, j, (255, 255, 0), thickness)                
+                    cv2.drawContours(gs.image,[box],0,(0,255,255),thickness)
+                    cv2.circle(gs.image, center=center, radius=10, color = (255,255,255), thickness=-1) 
+                    cv2.circle(gs.image, center=center1, radius=10, color = (255,0,255), thickness=5) 
+                    cv2.circle(gs.image, center=center2, radius=10, color = (255,0,255), thickness=5) 
             j += 1
 
         return grasp_list
@@ -145,7 +174,7 @@ if __name__ == "__main__":
 
     gs = InboxGraspPrediction()    
     
-    image_path = "InboxGraspPredicion_harmony/images/racks/photo_2023-06-13_11-44-18.jpg"
+    image_path = "sam_harmony/InboxGraspPredicion_harmony/images/simImgs/rgbtest20230704-151403.png"
     masks, scores = gs.generate_masks(image_path)
 
     for i, (mask, score) in enumerate(zip(masks, scores)):
@@ -157,6 +186,7 @@ if __name__ == "__main__":
         plt.imshow(gs.image)
         plt.title('Grasp')
         gs.show_mask(mask, plt.gca(),random_color=False)
+        # gs.show_points(gs._input_point, gs._input_label, plt.gca())
         gs_list = gs.generate_grasp(mask,vis=True)
         print ("grasp list:\n", gs_list)
         plt.imshow(gs.image)

@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: SAM test",
+            "type": "python",
+            "request": "launch",
+            "module": "sam_harmony.InboxGraspPredicion_harmony.InboxGraspPrediction",
+            "justMyCode": true
+        },
+        {
             "name": "Python: HarmonyBox Spatula - 4 racks- vision",
             "type": "python",
             "request": "launch",
