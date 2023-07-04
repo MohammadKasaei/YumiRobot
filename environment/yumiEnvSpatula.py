@@ -9,8 +9,8 @@ import random
 from collections import namedtuple
 from operator import methodcaller
 
-from environment.camera.camera import Camera, CameraIntrinsic
-from graspGenerator.grasp_generator import GraspGenerator
+from environment.camera.camera import Camera #, CameraIntrinsic
+# from graspGenerator.grasp_generator import GraspGenerator
 
 
 
