@@ -9,8 +9,14 @@ import random
 from collections import namedtuple
 from operator import methodcaller
 
+<<<<<<< Updated upstream
 from environment.camera.camera import Camera #, CameraIntrinsic
 # from graspGenerator.grasp_generator import GraspGenerator
+=======
+from environment.camera.camera import Camera, CameraIntrinsic
+from graspGenerator.grasp_generator import GraspGenerator
+from PIL import Image
+>>>>>>> Stashed changes
 
 
 
@@ -24,9 +30,6 @@ class yumiEnvSpatula():
         p.setGravity(0, 0, -9.81)
         p.setTimeStep(self.simulationStepTime)
 
-        p.configureDebugVisualizer(p.COV_ENABLE_RGB_BUFFER_PREVIEW,0)
-        p.configureDebugVisualizer(p.COV_ENABLE_DEPTH_BUFFER_PREVIEW,0)
-        p.configureDebugVisualizer(p.COV_ENABLE_SEGMENTATION_MARK_PREVIEW,0)
         p.configureDebugVisualizer(p.COV_ENABLE_GUI,0)
         p.resetDebugVisualizerCamera(cameraDistance=1.3, cameraYaw=90, cameraPitch=-40, cameraTargetPosition=[0,0,0])
 
@@ -214,8 +217,8 @@ class yumiEnvSpatula():
     def _init_camera(self,camera_pos,camera_target,visulize_camera = False):        
         self._camera_pos = camera_pos
         self._camera_target = camera_target
-        IMG_SIZE = 220
-        self.camera = Camera(cam_pos=self._camera_pos, cam_target= self._camera_target, near = 0.2, far = 2, size= [IMG_SIZE, IMG_SIZE], fov=60)
+        
+        self.camera = Camera(cam_pos=self._camera_pos, cam_target= self._camera_target, near = 0.2, far = 2, size= [640, 480], fov=60)
         if visulize_camera:
             self.visualize_camera_position(self._camera_pos)
 
@@ -235,7 +238,7 @@ class yumiEnvSpatula():
     def go_home(self):
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([0.5,0.3,0.5])
+        end_pos = np.array([0.1,0.4,0.3])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
@@ -247,7 +250,7 @@ class yumiEnvSpatula():
         
         p0,o0 = self.get_right_ee_state()
         start_pos = p0
-        end_pos = np.array([0.5,-0.3,0.5])
+        end_pos = np.array([0.1,-0.4,0.3])
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
@@ -272,7 +275,7 @@ class yumiEnvSpatula():
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
         end_acc = np.array([0.0, 0.0, 0.0])
-        duration = 5.0
+        duration = 6.0
         dt = 0.005
         t, xl_pos, yl_pos, zl_pos, xl_vel, yl_vel, zl_vel, xl_acc, yl_acc, zl_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
@@ -678,8 +681,11 @@ class yumiEnvSpatula():
         return obj_id
 
     def create_karolinska_env(self):
+        
+        self.add_a_cube_without_collision(pos=[0.5,0,0.002],size=[0.5,1,0.004],color=[0.9,0.9,0.9,1])
+
         self.create_harmony_box(box_centre=[0.5,0.])
-        self.add_a_cube(pos=[0.5,0,0.04],size=[0.285,0.17,0.04],color=[0.1,0.1,0.1,1],mass=50)
+        self.add_a_cube(pos=[0.5,0,0.04],size=[0.285,0.175,0.04],color=[0.1,0.1,0.1,1],mass=50)
         self.add_a_cube_without_collision(pos=[0.5,0,0.04],size=[0.285,0.32,0.04],color=[0.1,0.1,0.1,1])
 
         self.add_a_cube(pos=[-0.1,0.255,0.1],size =[0.55,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
@@ -721,9 +727,13 @@ class yumiEnvSpatula():
            depth = depth-self.bgDepthBox+self.bgDepthWithoutBox
 
         ##convert BGR to RGB
-        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-        return rgb,depth
-    
+        # rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        return bgr,depth
+    def save_image(self,bgr):
+        rgbim = Image.fromarray(bgr)
+        # depim = Image.fromarray(bgr)
+        timestr = time.strftime("%Y%m%d-%H%M%S")
+        rgbim.save('savedImages/rgbtest'+timestr+'.png')
 
     def creat_pile_of_tubes(self,number_of_tubes):
         obj_init_pos = [0.4, -0.]

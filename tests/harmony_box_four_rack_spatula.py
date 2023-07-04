@@ -15,6 +15,7 @@ from operator import methodcaller
 from environment.yumiEnvSpatula import yumiEnvSpatula
         
 import numpy as np
+from PIL import Image
 
 
 if __name__ == '__main__':
@@ -31,9 +32,12 @@ if __name__ == '__main__':
 
         if state == -1:            
             env.go_home()
+            env.wait(10)
             state = 0
 
         elif state == 0: # move on top of the box
+            bgr, depth = env.capture_image()
+            # env.save_image(bgr)        
             env.go_on_top_of_box()
             env.wait(1)
             # time.sleep(2)
