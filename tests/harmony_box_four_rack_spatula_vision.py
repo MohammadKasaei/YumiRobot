@@ -13,6 +13,8 @@ from operator import methodcaller
 # from graspGenerator.grasp_generator import GraspGenerator
 
 from environment.yumiEnvSpatula import yumiEnvSpatula
+from sam_harmony.InboxGraspPredicion_harmony.InboxGraspPrediction import InboxGraspPrediction
+
         
 import numpy as np
 
@@ -20,6 +22,7 @@ import numpy as np
 if __name__ == '__main__':
 
     env = yumiEnvSpatula()
+    obj_detection = InboxGraspPrediction() 
     env.create_karolinska_env()
     time.sleep(5)
     env.reset_robot()
