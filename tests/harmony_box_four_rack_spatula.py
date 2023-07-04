@@ -26,10 +26,9 @@ if __name__ == '__main__':
     env.reset_robot()
     env.wait(20)
     state = -1     
-    target_rack = 1    
+    target_rack_level = 1    
 
     while (True):
-
 
         if state == -1:            
             env.go_home()
@@ -42,12 +41,12 @@ if __name__ == '__main__':
             state = 2
         
         elif state == 2: # move inside the box
-            env.go_inside_box(target_rack)
+            env.go_inside_box(target_rack_level)
             env.wait(1)
             state = 4
 
         elif state == 4: # grasp
-            env.grasp(target_rack)
+            env.grasp(target_rack_level)
             env.wait(5)
             state = 5
         
@@ -56,17 +55,17 @@ if __name__ == '__main__':
             state = 6
         
         elif state == 6: # move the rack towards the robot
-            env.move_racks_to_station(target_rack)
+            env.move_racks_to_station(target_rack_level)
             state = 7
 
         elif state == 7: # put down
-            env.place_racks_to_station(target_rack)
-            env.release_racks(target_rack)
-            env.release_arms(target_rack)
+            env.place_racks_to_station(target_rack_level)
+            env.release_racks(target_rack_level)
+            env.release_arms(target_rack_level)
             env.go_home()
-            
-            if target_rack ==1:
-                target_rack = 2
+
+            if target_rack_level ==1:
+                target_rack_level = 2
                 state = 0
             else:    
                 state = 10   #stop
