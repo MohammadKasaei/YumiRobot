@@ -676,8 +676,8 @@ class yumiEnvSpatula():
 
     def create_karolinska_env(self):
         
-        offset_x = 0.05#np.random.randint(-50,50)/1000.0
-        offset_y = 0.05#np.random.randint(-50,50)/1000.0
+        offset_x = 0#*np.random.randint(-50,50)/1000.0
+        offset_y = 0#*np.random.randint(-50,50)/1000.0
         print (f"offset_x : {offset_x:2.3f} offset_y : {offset_y:2.3f}")
         self.add_a_cube_without_collision(pos=[0.5+offset_x,0+offset_y,0.002],size=[0.5,1,0.004],color=[0.9,0.9,0.9,1])
 
@@ -724,8 +724,76 @@ class yumiEnvSpatula():
            depth = depth-self.bgDepthBox+self.bgDepthWithoutBox
 
         ##convert BGR to RGB
-        # rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
-        return bgr,depth
+        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        return rgb,depth
+    
+    def find_box_center(self,image,vis_masks = False,vis_output=False):
+        # Define the region of interest (ROI) coordinates
+        x = 280  # starting x-coordinate
+        y = 80  # starting y-coordinate
+        width = 180  # width of the ROI
+        height = 320  # height of the ROI
+
+        # Crop the image using numpy array slicing
+        image = image[y:y+height, x:x+width]
+        if vis_masks:
+            cv2.imshow('image', image)
+
+
+        # hsv filter
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        h_min, h_max = 0 , 5
+        s_min, s_max = 0 , 5
+        v_min, v_max = 90,  180
+
+        lower_threshold = np.array([h_min, s_min, v_min])
+        upper_threshold = np.array([h_max, s_max, v_max])
+        mask = cv2.inRange(hsv_image, lower_threshold, upper_threshold)
+        if vis_masks:
+            cv2.imshow('mask', mask)
+
+        result = cv2.bitwise_and(image, image, mask=mask)
+
+        # Gaussian blur to reduce noise
+        blurred = cv2.GaussianBlur(result, (5, 5), 0)
+        if vis_masks:
+            cv2.imshow('blurred', blurred)
+
+        # Apply Canny edge detection
+        edges = cv2.Canny(blurred, 100, 200)
+        if vis_masks:
+            cv2.imshow('edge', edges)
+            # cv2.waitKey(0)
+
+        # Define the kernel for dilation
+        kernel = np.ones((5, 5), np.uint8)  # Adjust the kernel size according to your needs
+        # Perform dilation
+        dilated = cv2.dilate(edges, kernel, iterations=5)
+
+
+        # Find contours in the mask
+        contours, _ = cv2.findContours(dilated, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        # find the center of mask
+        # Initialize variables for centroid calculation
+        moments = cv2.moments(contours[0])
+        center_x = int(moments['m10'] / moments['m00'])
+        center_y = int(moments['m01'] / moments['m00'])
+
+        # Draw the center on the mask
+        radius = 10
+        image = np.ascontiguousarray(image, dtype=np.uint8)
+
+
+        cv2.circle(image, (center_x, center_y), radius, (0, 255, 255), -1)
+        cv2.circle(image, (center_x, center_y), radius-2, (255, 0, 255), -1)
+        if vis_output:
+            cv2.imshow('image', image)
+        if vis_masks or vis_output:
+            cv2.waitKey(0)
+            # cv2.destroyAllWindows()
+        return [x+center_x, y+center_y]
+
     def save_image(self,bgr):
         rgbim = Image.fromarray(bgr)
         # depim = Image.fromarray(bgr)

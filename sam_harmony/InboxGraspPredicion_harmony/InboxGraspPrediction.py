@@ -13,8 +13,7 @@ from PIL import Image
 from segment_anything import sam_model_registry 
 from segment_anything import SamAutomaticMaskGenerator
 from segment_anything import SamPredictor
-from torch.utils.data import Dataset, DataLoader
-import glob
+
 import torch
 torch.cuda.empty_cache()
 torch.cuda.memory_summary(device=None, abbreviated=False)

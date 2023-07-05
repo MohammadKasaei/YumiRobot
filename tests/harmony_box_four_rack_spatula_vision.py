@@ -9,8 +9,6 @@ import random
 from collections import namedtuple
 from operator import methodcaller
 
-# from environment.camera.camera import Camera, CameraIntrinsic
-# from graspGenerator.grasp_generator import GraspGenerator
 
 from environment.yumiEnvSpatula import yumiEnvSpatula
 from sam_harmony.InboxGraspPredicion_harmony.InboxGraspPrediction import InboxGraspPrediction
@@ -22,7 +20,7 @@ import numpy as np
 if __name__ == '__main__':
 
     env = yumiEnvSpatula()
-    obj_detection = InboxGraspPrediction() 
+    # obj_detection = InboxGraspPrediction() 
     env.create_karolinska_env()
     # time.sleep(5)
     env.reset_robot()
@@ -37,10 +35,13 @@ if __name__ == '__main__':
             state = 0
 
         elif state == 0: # move on top of the box
-            bgr, depth = env.capture_image()
+            rgb, depth = env.capture_image()
+            box_pos = env.find_box_center(rgb,vis_output=True)
+            # print(box_pos)
+
             # detect the box 
             # update the sam params based on the box  
-            env.save_image(bgr)   
+            # env.save_image(bgr)   
             
             env.go_on_top_of_box()
             env.wait(1)
