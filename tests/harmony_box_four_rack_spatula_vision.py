@@ -24,7 +24,7 @@ if __name__ == '__main__':
     env = yumiEnvSpatula()
     obj_detection = InboxGraspPrediction() 
     env.create_karolinska_env()
-    time.sleep(5)
+    # time.sleep(5)
     env.reset_robot()
     env.wait(20)
     state = -1     
@@ -38,9 +38,10 @@ if __name__ == '__main__':
 
         elif state == 0: # move on top of the box
             bgr, depth = env.capture_image()
-            env.save_image(bgr)        
-            env.go_on_top_of_box()
-        
+            # detect the box 
+            # update the sam params based on the box  
+            env.save_image(bgr)   
+            
             env.go_on_top_of_box()
             env.wait(1)
             # time.sleep(2)

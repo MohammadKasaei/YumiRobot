@@ -676,20 +676,23 @@ class yumiEnvSpatula():
 
     def create_karolinska_env(self):
         
-        self.add_a_cube_without_collision(pos=[0.5,0,0.002],size=[0.5,1,0.004],color=[0.9,0.9,0.9,1])
+        offset_x = 0.05#np.random.randint(-50,50)/1000.0
+        offset_y = 0.05#np.random.randint(-50,50)/1000.0
+        print (f"offset_x : {offset_x:2.3f} offset_y : {offset_y:2.3f}")
+        self.add_a_cube_without_collision(pos=[0.5+offset_x,0+offset_y,0.002],size=[0.5,1,0.004],color=[0.9,0.9,0.9,1])
 
-        self.create_harmony_box(box_centre=[0.5,0.])
-        self.add_a_cube(pos=[0.5,0,0.04],size=[0.285,0.175,0.04],color=[0.1,0.1,0.1,1],mass=50)
-        self.add_a_cube_without_collision(pos=[0.5,0,0.04],size=[0.285,0.32,0.04],color=[0.1,0.1,0.1,1])
+        self.create_harmony_box(box_centre=[0.5+offset_x,0.0+offset_y])
+        self.add_a_cube(pos=[0.5+offset_x,0+offset_y,0.04],size=[0.285,0.175,0.04],color=[0.1,0.1,0.1,1],mass=50)
+        self.add_a_cube_without_collision(pos=[0.5+offset_x,0+offset_y,0.04],size=[0.285,0.32,0.04],color=[0.1,0.1,0.1,1])
 
         self.add_a_cube(pos=[-0.1,0.255,0.1],size =[0.55,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
         self.add_a_cube(pos=[-0.1,-0.255,0.1],size=[0.55,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
         self.wait(1)
-        self.add_red_rack(centre=[0.6,0.06,0.2])
-        self.add_green_rack(centre=[0.6,-0.06,0.2])        
+        self.add_red_rack(centre=[0.6+offset_x,0.06+offset_y,0.2])
+        self.add_green_rack(centre=[0.6+offset_x,-0.06+offset_y,0.2])        
         self.wait(1)
-        self.add_red_rack(centre=[0.6,0.06,0.3])
-        self.add_green_rack(centre=[0.6,-0.06,0.3])        
+        self.add_red_rack(centre=[0.6+offset_x,0.06+offset_y,0.3])
+        self.add_green_rack(centre=[0.6+offset_x,-0.06+offset_y,0.3])        
         self.wait(1)
         
     
