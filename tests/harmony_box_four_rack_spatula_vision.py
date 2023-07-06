@@ -43,6 +43,7 @@ if __name__ == '__main__':
             # update the sam params based on the box  
             # env.save_image(bgr)   
             
+            
             env.go_on_top_of_box()
             env.wait(1)
             # time.sleep(2)
