@@ -21,9 +21,36 @@ if __name__ == '__main__':
 
     env = yumiEnvSpatula()
     # obj_detection = InboxGraspPrediction() 
-    env.create_karolinska_env()
+    # env.create_karolinska_env()
+    # env.add_chessboard(np.array([1,1,0.1]))
+    xd = env.covert_pixel_to_robot_frame([340,210])
+    id = env.add_a_cube(pos=[xd[0],xd[1],0.04],size=[0.02,0.02,0.02],color=[0.1,0.1,0.1,1],mass=1)
+
+    xd[2] = 0.4     
+
+    ori = p.getQuaternionFromEuler([0,np.pi,0]) 
+    env.move_left_arm(traget_pose=[xd,ori])
+
+    
+
+
+    
     # time.sleep(5)
-    env.reset_robot()
+    # env.reset_robot()
+    while True:
+        env.move_left_arm(traget_pose=[xd,ori])
+        env._dummy_sim_step(1)
+        rgb, depth = env.capture_image()
+        image = np.ascontiguousarray(rgb, dtype=np.uint8)
+        cv2.line(rgb, (0, 240), (640, 240), (0, 255, 0), thickness=2)
+        cv2.line(rgb, (320, 0), (320, 480), (0, 255, 0), thickness=2)
+
+        # p.resetBasePositionAndOrientation()
+
+        cv2.imshow('image', rgb)
+
+        cv2.waitKey(1)
+
     env.wait(20)
     state = -1     
     target_rack_level = 1    
@@ -36,7 +63,7 @@ if __name__ == '__main__':
 
         elif state == 0: # move on top of the box
             rgb, depth = env.capture_image()
-            box_pos = env.find_box_center(rgb,vis_output=True)
+            box_pos = env.find_box_centre(rgb,vis_output=True)
             # print(box_pos)
 
             # detect the box 

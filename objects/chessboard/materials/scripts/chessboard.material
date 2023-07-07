@@ -1,0 +1,16 @@
+material Chessboard/Diffuse
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture ../textures/chessboard.png
+        filtering anistropic
+        max_anisotropy 200
+      }
+    }
+  }
+}
+

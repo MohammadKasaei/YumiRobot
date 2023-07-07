@@ -1,0 +1,12 @@
+<robot name="chessboard">
+  <link name="base_link">
+    <visual>
+      <geometry>
+        <box size="0.41 0.2 0.01"/>
+      </geometry>
+      <material>
+        <texture filename="objects/chessboard/materials/textures/chessboard.png"/>
+      </material>
+    </visual>
+  </link>
+</robot>

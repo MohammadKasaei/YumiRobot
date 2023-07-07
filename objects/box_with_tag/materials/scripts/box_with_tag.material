@@ -1,0 +1,16 @@
+material Tag/Diffuse
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture ../textures/box_with_tag.png
+        filtering anistropic
+        max_anisotropy 200
+      }
+    }
+  }
+}
+
