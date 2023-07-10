@@ -32,6 +32,7 @@ class Camera:
                                                    self.view_matrix, self.projection_matrix,
                                                    )
         return rgb[:, :, 0:3], depth, seg
+    
 
     def start_recording(self, save_dir):
         if not os.path.exists(save_dir):

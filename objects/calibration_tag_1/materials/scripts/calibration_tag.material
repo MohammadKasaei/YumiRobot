@@ -1,0 +1,16 @@
+material Tag/Diffuse
+{
+  technique
+  {
+    pass
+    {
+      texture_unit
+      {
+        texture ../textures/calibration_tag_1.png
+        filtering anistropic
+        max_anisotropy 200
+      }
+    }
+  }
+}
+

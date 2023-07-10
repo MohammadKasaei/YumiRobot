@@ -617,7 +617,7 @@ class yumiEnvSpatula():
         p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._RIGHT_GRIP_JOINT_IDS,targetPositions = [gw,gw])
 
   
-    def add_a_cube(self,pos,size=[0.1,0.1,0.1],mass = 0.1, color = [1,1,0,1]):
+    def add_a_cube(self,pos,size=[0.1,0.1,0.1],mass = 0.1, color = [1,1,0,1], textureUniqueId = None):
 
         # cubesID = []
         box     = p.createCollisionShape(p.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, size[2]/2])
@@ -628,6 +628,10 @@ class yumiEnvSpatula():
                         spinningFriction=0.001,
                         rollingFriction=0.001,
                         linearDamping=0.0)
+        
+        if textureUniqueId is not None:
+            p.changeVisualShape(obj_id, -1, textureUniqueId=textureUniqueId)
+
         # cubesID.append(obj_id)
         
         p.stepSimulation()
@@ -665,7 +669,7 @@ class yumiEnvSpatula():
         # obj_id = p.loadURDF(f"objects/rack/urdf/rack_red.urdf",
         #                 [centre[0] - rack_width / 2.0, centre[1], centre[2]],
         #                 p.getQuaternionFromEuler([0, 0, np.pi/2]))
-        obj_id = p.loadURDF(f"objects/rack/urdf/rack_red_with_tubes.urdf",
+        obj_id = p.loadURDF("objects/rack/urdf/rack_red_with_tubes.urdf",
                         [centre[0] - rack_width / 2.0, centre[1], centre[2]],
                         p.getQuaternionFromEuler([0, 0, np.pi/2]))
         return obj_id
@@ -676,11 +680,71 @@ class yumiEnvSpatula():
         # obj_id = p.loadURDF(f"objects/rack/urdf/rack_green.urdf",
         #                 [centre[0] - rack_width / 2.0, centre[1], centre[2]],
         #                 p.getQuaternionFromEuler([0, 0, np.pi/2]))
-        obj_id = p.loadURDF(f"objects/rack/urdf/rack_green_with_tubes.urdf",
+        obj_id = p.loadURDF("objects/rack/urdf/rack_green_with_tubes.urdf",
                         [centre[0] - rack_width / 2.0, centre[1], centre[2]],
                         p.getQuaternionFromEuler([0, 0, np.pi/2]))
         
         return obj_id
+    
+    def add_chessboard(self,pos):
+
+        # texUid = p.loadTexture("objects/chessboard/materials/textures/chessboard.png")
+        # obj_id = self.add_a_cube(pos=[1,1,0.1],size =[1, 1, 0.01],color=[0.1,1,1,1],mass=0.1, textureUniqueId=texUid)
+        # # p.changeVisualShape(planeUid, -1, textureUniqueId=texUid)
+        # self._dummy_sim_step(10)
+
+        obj_id = p.loadSDF(f"objects/chessboard/model.sdf")
+                        # pos,
+                        # p.getQuaternionFromEuler([0, 0, 0]))
+        # obj_id = p.loadURDF("objects/chessboard/chessboard.urdf",
+        #                 pos,
+        #                 p.getQuaternionFromEuler([0, 0, 0]))
+        
+        return obj_id
+    
+
+    def covert_pixel_to_robot_frame(self,pos):
+
+        # Convert pixel coordinate to normalized image coordinates
+        u_norm = pos[0] / self.camera.width
+        v_norm = pos[1] / self.camera.height
+
+        # Convert normalized image coordinates to camera coordinates
+        u_cam = (2.0 * u_norm) - 1.0
+        v_cam = 1.0 - (2.0 * v_norm)
+
+        # Get camera projection matrix
+        proj_matrix = np.array(self.camera.projection_matrix).reshape(4, 4) #np.array(p.getCameraProjectionMatrix(camera_id)).reshape(4, 4)
+
+        # Convert camera coordinates to homogeneous coordinates
+        camera_coords = np.array([u_cam, v_cam, -1.0, 1.0])
+
+        # Apply projection matrix
+        homogeneous_coords = proj_matrix @ camera_coords
+        homogeneous_coords /= homogeneous_coords[3]  # Normalize by the fourth component
+
+        # Get camera view matrix
+        view_matrix = np.array(self.camera.view_matrix).reshape(4, 4) #np.array(p.getCameraViewMatrix(camera_id)).reshape(4, 4)
+
+        # # Get camera pose
+        # camera_pos = self.camera.pos
+        # camera_ori = 
+        
+
+        # Extract rotation matrix from view matrix
+        rotation_matrix = np.linalg.inv(view_matrix[:3, :3])
+
+        # Extract translation vector from view matrix
+        translation_vector = -rotation_matrix @ view_matrix[:3, 3]
+
+        # Convert camera coordinates to robot frame coordinates
+        robot_pos = rotation_matrix @ homogeneous_coords[:3] + translation_vector
+
+        # Print the result
+        print("Pixel Coordinate:", (pos[0], pos[1]))
+        print("Robot Frame Coordinate:", tuple(robot_pos))
+
+        return robot_pos
 
     def create_karolinska_env(self):
         
@@ -735,7 +799,7 @@ class yumiEnvSpatula():
         rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
         return rgb,depth
     
-    def find_box_center(self,image,vis_masks = False,vis_output=False):
+    def find_box_centre(self,image,vis_masks = False,vis_output=False):
         # Define the region of interest (ROI) coordinates
         x = 280  # starting x-coordinate
         y = 80  # starting y-coordinate

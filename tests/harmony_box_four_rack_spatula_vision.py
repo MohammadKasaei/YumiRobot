@@ -25,6 +25,7 @@ if __name__ == '__main__':
     env.create_karolinska_env()
     time.sleep(5)
     env.reset_robot()
+
     env.wait(20)
     state = -1     
     target_rack_level = 1    
@@ -38,7 +39,7 @@ if __name__ == '__main__':
         elif state == 0: # move on top of the box
             if target_rack_level == 1:
                 rgb, depth = env.capture_image()
-                box_centre = env.find_box_center(rgb,vis_output=True) # detect the box 
+                box_centre = env.find_box_centre(rgb,vis_output=True) # detect the box 
                 obj_detection.config_params_based_on_box_centre(box_centre)
                 masks, scores = obj_detection.generate_masks2(rgb)
                 for i, (mask, score) in enumerate(zip(masks, scores)):
