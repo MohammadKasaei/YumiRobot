@@ -61,6 +61,17 @@ class InboxGraspPrediction():
         w, h = box[2] - box[0], box[3] - box[1]
         ax.add_patch(plt.Rectangle((x0, y0), w, h, edgecolor='green', facecolor=(0,0,0,0), lw=2))    
 
+    def config_params_based_on_box_centre(self,box_centre):
+        input_point1 = np.array([box_centre[0]-25,box_centre[1]-30]).reshape(1,2)
+        step_x = 10
+        step_y = 10
+        for i in range(5):
+            for j in range(7):
+                input_point1 = np.vstack((input_point1,(input_point1[0,0]+i*step_x,input_point1[0,1]+j*step_y)))
+        
+        self._input_point = input_point1        
+        self._input_label = np.ones(36)
+        
     def config(self):
         # input_point1 = np.array([300,200]).reshape(1,2)
         # input_point2 = np.array([300,260]).reshape(1,2)
@@ -111,6 +122,44 @@ class InboxGraspPrediction():
 
     def generate_masks(self,image_path):
         self.image = cv2.imread(image_path)
+
+        self.image_raw = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
+        kernel = np.ones((5,5),np.float32) / 30
+        self.image = cv2.filter2D(self.image_raw,-1,kernel)
+        
+        # self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
+
+        dilatation_size = 2
+        # dilation_shape = cv2.MORPH_RECT
+        dilation_shape = cv2.MORPH_ELLIPSE        
+        element = cv2.getStructuringElement(dilation_shape, (2 * dilatation_size + 1, 2 * dilatation_size + 1),
+                                           (dilatation_size, dilatation_size))        
+        self.image = cv2.dilate(self.image, element)
+
+
+        self._predictor.set_image(self.image)
+        self._masks, self._scores, self._logits = self._predictor.predict(
+            point_coords=self._input_point,
+            point_labels=self._input_label,
+            # multimask_output=True,
+            # box=input_box[None, :],
+            multimask_output=True,
+        )
+
+        mask_input = self._logits[np.argmax(self._scores), :, :]  # Choose the model's best mask
+
+        self._masks, _, _ = self._predictor.predict(
+            point_coords=self._input_point,
+            point_labels=self._input_label,
+            mask_input=mask_input[None, :, :],
+            multimask_output=False,
+        )
+
+        return self._masks, self._scores
+    
+
+    def generate_masks2(self,image):
+        self.image = image
 
         self.image_raw = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         kernel = np.ones((5,5),np.float32) / 30

@@ -38,6 +38,7 @@ class yumiEnvSpatula():
         
         
         self.reset_robot()        
+        self.pos_offset = np.array([0,0])
         self._dummy_sim_step(1000)
 
         print("\n\n\nRobot is armed and ready to use...\n\n\n")
@@ -260,11 +261,18 @@ class yumiEnvSpatula():
             self.move_right_arm(traget_pose=pose_r)
             
             self._dummy_sim_step(1)
+    def convert_pixel_to_metter(self,pixel):
+        pixel_meter_ratio_x = 100/38.5 #100mm=38 pixel;
+        pixel_meter_ratio_y = 100/47.5 #100mm=38 pixel;
+
+        origin_pixel_coordinate = np.array([339,239])
+        diff = pixel-origin_pixel_coordinate
+        return np.array([diff[0]*pixel_meter_ratio_x, -diff[1]*pixel_meter_ratio_y])
         
     def go_on_top_of_box(self):
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([0.5,0.145,0.5])
+        end_pos = np.array([0.5+self.pos_offset[0],0.145+self.pos_offset[1],0.5])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
@@ -276,7 +284,7 @@ class yumiEnvSpatula():
         
         p0,o0 = self.get_right_ee_state()
         start_pos = p0
-        end_pos = np.array([0.5,-0.145,0.5])
+        end_pos = np.array([0.5+self.pos_offset[0],-0.145+self.pos_offset[1],0.5])
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
@@ -295,10 +303,10 @@ class yumiEnvSpatula():
                         
     def go_inside_box(self,racks_level):
         
-        depth = 0.26 if racks_level == 2 else 0.33
+        depth = 0.26 if racks_level == 2 else 0.335
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([0.5,0.145,depth])
+        end_pos = np.array([0.5+self.pos_offset[0],0.145+self.pos_offset[1],depth])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
@@ -310,7 +318,7 @@ class yumiEnvSpatula():
         
         p0,o0 = self.get_right_ee_state()
         start_pos = p0
-        end_pos = np.array([0.5,-0.145,depth])
+        end_pos = np.array([0.5+self.pos_offset[0],-0.145+self.pos_offset[1],depth])
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
@@ -328,15 +336,15 @@ class yumiEnvSpatula():
             self._dummy_sim_step(1)
 
     def grasp(self,racks_level):
-        depth =  0.26 if racks_level == 2 else 0.33
-        grasp_width = 0.043
+        depth =  0.26 if racks_level == 2 else 0.335
+        grasp_width = 0.045
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([0.5,0.145-grasp_width ,depth])
+        end_pos = np.array([0.5+self.pos_offset[0],0.145+self.pos_offset[1]-grasp_width ,depth])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
-        start_acc = np.array([0.0, 0.004, 0.0])
-        end_acc = np.array([0.0, 0.004, 0.0])
+        start_acc = np.array([0.0, 0.002, 0.0])
+        end_acc = np.array([0.0, 0.00, 0.0])
         duration = 0.5
         dt = 0.005
         t, xl_pos, yl_pos, zl_pos, xl_vel, yl_vel, zl_vel, xl_acc, yl_acc, zl_acc = self.fifth_order_trajectory_planner_3d(
@@ -344,7 +352,7 @@ class yumiEnvSpatula():
         
         p0,o0 = self.get_right_ee_state()
         start_pos = p0
-        end_pos = np.array([0.5,-0.145+grasp_width,depth])
+        end_pos = np.array([0.5+self.pos_offset[0],-0.145+self.pos_offset[1]+grasp_width,depth])
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
@@ -366,7 +374,7 @@ class yumiEnvSpatula():
         lift_up = 0.5
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([0.5,0.145-grasp_width ,lift_up])
+        end_pos = np.array([0.5+self.pos_offset[0],0.145+self.pos_offset[1]-grasp_width ,lift_up])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
@@ -378,7 +386,7 @@ class yumiEnvSpatula():
         
         p0,o0 = self.get_right_ee_state()
         start_pos = p0
-        end_pos = np.array([0.5,-0.145+grasp_width,lift_up])
+        end_pos = np.array([0.5+self.pos_offset[0],-0.145+self.pos_offset[1]+grasp_width,lift_up])
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
@@ -676,8 +684,8 @@ class yumiEnvSpatula():
 
     def create_karolinska_env(self):
         
-        offset_x = 0#*np.random.randint(-50,50)/1000.0
-        offset_y = 0#*np.random.randint(-50,50)/1000.0
+        offset_x = 1*np.random.randint(-50,50)/1000.0
+        offset_y = 1*np.random.randint(-50,50)/1000.0
         print (f"offset_x : {offset_x:2.3f} offset_y : {offset_y:2.3f}")
         self.add_a_cube_without_collision(pos=[0.5+offset_x,0+offset_y,0.002],size=[0.5,1,0.004],color=[0.9,0.9,0.9,1])
 
