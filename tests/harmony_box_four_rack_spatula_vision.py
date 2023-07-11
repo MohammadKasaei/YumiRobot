@@ -29,6 +29,7 @@ if __name__ == '__main__':
     env.wait(20)
     state = -1     
     target_rack_level = 1    
+    vis = False
 
     while (True):
 
@@ -39,30 +40,29 @@ if __name__ == '__main__':
         elif state == 0: # move on top of the box
             if target_rack_level == 1:
                 rgb, depth = env.capture_image()
-                box_centre = env.find_box_centre(rgb,vis_output=True) # detect the box 
+                box_centre = env.find_box_centre(rgb,vis_output=vis) # detect the box 
                 obj_detection.config_params_based_on_box_centre(box_centre)
                 masks, scores = obj_detection.generate_masks2(rgb)
-                for i, (mask, score) in enumerate(zip(masks, scores)):
-                    plt.subplot(121)
-                    plt.imshow(obj_detection.image_raw)
-                    plt.title('Original')
-                    plt.axis('on')
-                    plt.subplot(122)
-                    plt.imshow(obj_detection.image)
-                    plt.title('Grasp')
-                    obj_detection.show_mask(mask, plt.gca(),random_color=False)
-                    obj_detection.show_points(obj_detection._input_point, obj_detection._input_label, plt.gca())
+                for i, (mask, score) in enumerate(zip(masks, scores)):                    
                     gs_list = obj_detection.generate_grasp(mask,vis=True)
                     print ("grasp list:\n", gs_list)
-                    plt.imshow(obj_detection.image)
-                    plt.axis('on')
-                    plt.show()
-                # print(box_pos)
-                # update the sam params based on the box  
-                # env.save_image(bgr)   
-                box_center_pos = gs_list[0][0]            
-                env.pos_offset = env.convert_pixel_to_metter(box_center_pos) /1000.0
-                print (f"offset: {env.pos_offset} ")
+                    box_center_pos = gs_list[0][0]            
+                    env.pos_offset = env.convert_pixel_to_metter(box_center_pos) /1000.0
+                    print (f"offset: {env.pos_offset} ")
+                
+                    # plt.subplot(121)
+                    # plt.imshow(obj_detection.image_raw)
+                    # plt.title('Original')
+                    # plt.axis('on')
+                    # plt.subplot(122)
+                    if vis:
+                        plt.imshow(obj_detection.image)
+                        plt.title('Grasp')
+                        obj_detection.show_mask(mask, plt.gca(),random_color=False)
+                        obj_detection.show_points(obj_detection._input_point, obj_detection._input_label, plt.gca())
+                        plt.imshow(obj_detection.image)
+                        plt.axis('on')
+                        plt.show()
                 
             env.go_on_top_of_box()
             env.wait(1)

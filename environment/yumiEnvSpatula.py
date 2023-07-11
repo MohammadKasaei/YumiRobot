@@ -233,7 +233,7 @@ class yumiEnvSpatula():
     def go_home(self):
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([0.1,0.4,0.3])
+        end_pos = np.array([0.1,0.5,0.35])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
@@ -245,7 +245,7 @@ class yumiEnvSpatula():
         
         p0,o0 = self.get_right_ee_state()
         start_pos = p0
-        end_pos = np.array([0.1,-0.4,0.3])
+        end_pos = np.array([0.1,-0.5,0.35])
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
@@ -303,7 +303,8 @@ class yumiEnvSpatula():
                         
     def go_inside_box(self,racks_level):
         
-        depth = 0.26 if racks_level == 2 else 0.335
+        depth = 0.26 if racks_level == 2 else 0.345
+
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
         end_pos = np.array([0.5+self.pos_offset[0],0.145+self.pos_offset[1],depth])
@@ -336,16 +337,16 @@ class yumiEnvSpatula():
             self._dummy_sim_step(1)
 
     def grasp(self,racks_level):
-        depth =  0.26 if racks_level == 2 else 0.335
+        depth =  0.26 if racks_level == 2 else 0.345
         grasp_width = 0.045
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
         end_pos = np.array([0.5+self.pos_offset[0],0.145+self.pos_offset[1]-grasp_width ,depth])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
-        start_acc = np.array([0.0, 0.002, 0.0])
+        start_acc = np.array([0.0, 0.00, 0.0])
         end_acc = np.array([0.0, 0.00, 0.0])
-        duration = 0.5
+        duration = 1.
         dt = 0.005
         t, xl_pos, yl_pos, zl_pos, xl_vel, yl_vel, zl_vel, xl_acc, yl_acc, zl_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
@@ -407,12 +408,12 @@ class yumiEnvSpatula():
         station_x = 0.1 if racks_level== 1 else -0.05 
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
-        end_pos = np.array([-station_x,0.4,0.5])
+        end_pos = np.array([-station_x,0.45,0.5])
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
         end_acc = np.array([0.0, 0.0, 0.0])
-        duration = 45.0
+        duration = 15.0
         dt = 0.005
 
         t, xl_pos, yl_pos, zl_pos, xl_vel, yl_vel, zl_vel, xl_acc, yl_acc, zl_acc = self.fifth_order_trajectory_planner_3d(
@@ -447,7 +448,7 @@ class yumiEnvSpatula():
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
         end_acc = np.array([0.0, 0.0, 0.0])
-        duration = 45.0
+        duration = 15.0
         dt = 0.005
 
         t, xl_pos, yl_pos, zl_pos, xl_vel, yl_vel, zl_vel, xl_acc, yl_acc, zl_acc = self.fifth_order_trajectory_planner_3d(
@@ -617,12 +618,12 @@ class yumiEnvSpatula():
         p.setJointMotorControlArray(self.robot_id,controlMode = p.POSITION_CONTROL, jointIndices = self._RIGHT_GRIP_JOINT_IDS,targetPositions = [gw,gw])
 
   
-    def add_a_cube(self,pos,size=[0.1,0.1,0.1],mass = 0.1, color = [1,1,0,1], textureUniqueId = None):
+    def add_a_cube(self,pos, ori = [0,0,0],size=[0.1,0.1,0.1],mass = 0.1, color = [1,1,0,1], textureUniqueId = None):
 
         # cubesID = []
         box     = p.createCollisionShape(p.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, size[2]/2])
         vis     = p.createVisualShape(p.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, size[2]/2], rgbaColor=color)
-        obj_id  = p.createMultiBody(mass, box, vis, pos, [0,0,0,1])
+        obj_id  = p.createMultiBody(mass, box, vis, pos, p.getQuaternionFromEuler(ori))
         p.changeDynamics(obj_id, 
                         -1,
                         spinningFriction=0.001,
@@ -637,23 +638,23 @@ class yumiEnvSpatula():
         p.stepSimulation()
         return obj_id 
     
-    def add_a_cube_without_collision(self,pos,size=[0.1,0.1,0.1], color = [1,1,0,1]):
+    def add_a_cube_without_collision(self,pos, ori_offset=[0,0,0], size=[0.1,0.1,0.1], color = [1,1,0,1]):
 
         # cubesID = []
         box     = p.createCollisionShape(p.GEOM_BOX, halfExtents=[0, 0, 0])
         vis     = p.createVisualShape(p.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, size[2]/2], rgbaColor=color)
-        obj_id  = p.createMultiBody(0, box, vis, pos, [0,0,0,1])
+        obj_id  = p.createMultiBody(0, box, vis, pos, p.getQuaternionFromEuler(ori_offset))
         p.stepSimulation()
         return obj_id 
     
-    def add_a_rack(self,centre, color = [1,0,0,1]):
+    def add_a_rack(self,centre, ori = [0,0,0,1], color = [1,0,0,1]):
 
         # cubesID = []
         size = [0.105, 0.205,0.05]
         mass = 0.1
         box     = p.createCollisionShape(p.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, size[2]/2])
         vis     = p.createVisualShape(p.GEOM_BOX, halfExtents=[size[0]/2, size[1]/2, size[2]/2], rgbaColor=color)
-        obj_id  = p.createMultiBody(mass, box, vis, centre, [0,0,0,1])
+        obj_id  = p.createMultiBody(mass, box, vis, centre, ori)
         p.changeDynamics(obj_id, 
                         -1,
                         spinningFriction=0.001,
@@ -664,25 +665,26 @@ class yumiEnvSpatula():
         return obj_id 
     
 
-    def add_red_rack(self,centre):
+    def add_red_rack(self,centre,ori = [0.0, 0.0, np.pi/2]):
         rack_width = 0.2
         # obj_id = p.loadURDF(f"objects/rack/urdf/rack_red.urdf",
         #                 [centre[0] - rack_width / 2.0, centre[1], centre[2]],
         #                 p.getQuaternionFromEuler([0, 0, np.pi/2]))
         obj_id = p.loadURDF("objects/rack/urdf/rack_red_with_tubes.urdf",
                         [centre[0] - rack_width / 2.0, centre[1], centre[2]],
-                        p.getQuaternionFromEuler([0, 0, np.pi/2]))
+                         p.getQuaternionFromEuler(ori))
+                        # p.getQuaternionFromEuler([0, 0, np.pi/2]))
         return obj_id
     
 
-    def add_green_rack(self,centre):
+    def add_green_rack(self,centre,ori = [0.0, 0.0, np.pi/2]):
         rack_width = 0.2
         # obj_id = p.loadURDF(f"objects/rack/urdf/rack_green.urdf",
         #                 [centre[0] - rack_width / 2.0, centre[1], centre[2]],
         #                 p.getQuaternionFromEuler([0, 0, np.pi/2]))
         obj_id = p.loadURDF("objects/rack/urdf/rack_green_with_tubes.urdf",
                         [centre[0] - rack_width / 2.0, centre[1], centre[2]],
-                        p.getQuaternionFromEuler([0, 0, np.pi/2]))
+                        p.getQuaternionFromEuler(ori))                    
         
         return obj_id
     
@@ -748,23 +750,34 @@ class yumiEnvSpatula():
 
     def create_karolinska_env(self):
         
-        offset_x = 1*np.random.randint(-50,50)/1000.0
-        offset_y = 1*np.random.randint(-50,50)/1000.0
-        print (f"offset_x : {offset_x:2.3f} offset_y : {offset_y:2.3f}")
-        self.add_a_cube_without_collision(pos=[0.5+offset_x,0+offset_y,0.002],size=[0.5,1,0.004],color=[0.9,0.9,0.9,1])
+        offset_x  = 1*np.random.randint(-50,50)/1000.0
+        offset_y  = 1*np.random.randint(-50,50)/1000.0
+        offset_th = 1*np.random.randint(-300,300)/1000.0 # 10 degrees = 0.174533 rads
+        
+        print (f"offset_x : {offset_x:2.3f} offset_y : {offset_y:2.3f} offset_th : {offset_th:2.3f}")
 
-        self.create_harmony_box(box_centre=[0.5+offset_x,0.0+offset_y])
-        self.add_a_cube(pos=[0.5+offset_x,0+offset_y,0.04],size=[0.285,0.175,0.04],color=[0.1,0.1,0.1,1],mass=50)
-        self.add_a_cube_without_collision(pos=[0.5+offset_x,0+offset_y,0.04],size=[0.285,0.32,0.04],color=[0.1,0.1,0.1,1])
+        ori_offset = np.array([0.,0,offset_th])
 
-        self.add_a_cube(pos=[-0.1,0.255,0.1],size =[0.55,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
-        self.add_a_cube(pos=[-0.1,-0.255,0.1],size=[0.55,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
+
+        # adding the placing area next to the robot
+        self.add_a_cube(pos=[-0.1,0.255,0.05],size =[0.55,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
+        self.add_a_cube(pos=[-0.1,-0.255,0.05],size=[0.55,0.1,0.07],color=[0.3,0.3,0.3,1],mass=500)
         self.wait(1)
-        self.add_red_rack(centre=[0.6+offset_x,0.06+offset_y,0.2])
-        self.add_green_rack(centre=[0.6+offset_x,-0.06+offset_y,0.2])        
+
+        # adding the table surface and box
+        self.add_a_cube_without_collision(pos=[0.5+offset_x,0+offset_y,0.005],size=[0.5,1,0.004],color=[0.9,0.9,0.9,1])        
+        self.add_harmony_box(box_centre=[0.5+offset_x,0.0+offset_y,0.005],ori_offset = ori_offset)
         self.wait(1)
-        self.add_red_rack(centre=[0.6+offset_x,0.06+offset_y,0.3])
-        self.add_green_rack(centre=[0.6+offset_x,-0.06+offset_y,0.3])        
+
+        # add a cube inside the box
+        self.add_a_cube(pos=[0.5+offset_x,0+offset_y,0.06],ori=ori_offset, size=[0.27,0.16,0.04],color=[0.1,0.1,0.1,1],mass=50)
+        
+        #add racks 
+        self.add_red_rack  (centre=[0.6+offset_x,0.06+offset_y,0.2],ori=np.array([0,0,np.pi/2]+ori_offset))
+        self.add_green_rack(centre=[0.6+offset_x,-0.06+offset_y,0.2],ori=np.array([0,0,np.pi/2]+ori_offset))        
+        self.wait(1)
+        self.add_red_rack(centre=[0.6+offset_x,0.06+offset_y,0.3],ori=np.array([0,0,np.pi/2]+ori_offset))
+        self.add_green_rack(centre=[0.6+offset_x,-0.06+offset_y,0.3],ori=np.array([0,0,np.pi/2]+ori_offset))        
         self.wait(1)
         
     
@@ -934,26 +947,39 @@ class yumiEnvSpatula():
                          p.getQuaternionFromEuler([0, 0, np.pi*0.5]),
                          useFixedBase=True)
         
-    def create_harmony_box(self, box_centre):
+    def add_harmony_box(self, box_centre,ori_offset = [0.0, 0.0, 0.]):
+        # box_width = 0.29
+        # box_height = 0.35
+        # box_z = 0.2/2
+        id1 = p.loadURDF("environment/urdf/objects/box.urdf",
+                         box_centre,
+                         p.getQuaternionFromEuler(ori_offset),
+                         useFixedBase=True)
+        
+    def create_harmony_box(self, box_centre,ori_offset = [0.0, 0.0, 0.]):
         box_width = 0.29
         box_height = 0.35
         box_z = 0.2/2
-        id1 = p.loadURDF(f'environment/urdf/objects/slab4.urdf',
+        id1 = p.loadURDF("environment/urdf/objects/box.urdf",
                          [box_centre[0] - box_width / 2.0, box_centre[1], box_z],
-                         p.getQuaternionFromEuler([0, 0, 0]),
+                         p.getQuaternionFromEuler(np.array([0, 0, 0])+ori_offset),
                          useFixedBase=True)
-        id2 = p.loadURDF(f'environment/urdf/objects/slab4.urdf',
-                         [box_centre[0] + box_width / 2.0, box_centre[1], box_z],
-                         p.getQuaternionFromEuler([0, 0, 0]),
-                         useFixedBase=True)
-        id3 = p.loadURDF(f'environment/urdf/objects/slab3.urdf',
-                         [box_centre[0], box_centre[1] + box_height/2.0, box_z],
-                         p.getQuaternionFromEuler([0, 0, np.pi*0.5]),
-                         useFixedBase=True)
-        id4 = p.loadURDF(f'environment/urdf/objects/slab3.urdf', 
-                          [box_centre[0], box_centre[1] - box_height/2.0, box_z],
-                         p.getQuaternionFromEuler([0, 0, np.pi*0.5]),
-                         useFixedBase=True)
+        
+        # id1 = p.loadURDF(f'environment/urdf/objects/slab4.urdf',
+        #                  [box_centre[0] - box_width / 2.0, box_centre[1], box_z],
+        #                  p.getQuaternionFromEuler(np.array([0, 0, 0])+ori_offset),
+        #                  useFixedBase=True)
+        # id2 = p.loadURDF(f'environment/urdf/objects/slab4.urdf',
+        #                  [box_centre[0] + box_width / 2.0, box_centre[1], box_z],
+        #                  p.getQuaternionFromEuler(np.array([0, 0, 0])+ori_offset),
+        #                  useFixedBase=True)
+        # id3 = p.loadURDF(f'environment/urdf/objects/slab3.urdf',
+        #                  [box_centre[0], box_centre[1] + box_height/2.0, box_z],
+        #                  p.getQuaternionFromEuler(np.array([0, 0, np.pi*0.5])+ori_offset),
+        #                  useFixedBase=True)
+        # id4 = p.loadURDF(f'environment/urdf/objects/slab3.urdf', 
+        #                   [box_centre[0], box_centre[1] - box_height/2.0, box_z],
+        #                  p.getQuaternionFromEuler(np.array([0, 0, np.pi*0.5])+ori_offset),useFixedBase=True)
 
 
     def remove_drawing(self,lineIDs):
