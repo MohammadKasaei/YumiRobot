@@ -750,9 +750,9 @@ class yumiEnvSpatula():
 
     def create_karolinska_env(self):
         
-        offset_x  = 1*np.random.randint(-50,50)/1000.0
-        offset_y  = 1*np.random.randint(-50,50)/1000.0
-        offset_th = 1*np.random.randint(-300,300)/1000.0 # 10 degrees = 0.174533 rads
+        offset_x  = 0.03 + 0*np.random.randint(-50,50)/1000.0
+        offset_y  = -0.05 + 0*np.random.randint(-50,50)/1000.0
+        offset_th = 0.3 +0*np.random.randint(-300,300)/1000.0 # 10 degrees = 0.174533 rads
         
         print (f"offset_x : {offset_x:2.3f} offset_y : {offset_y:2.3f} offset_th : {offset_th:2.3f}")
 
