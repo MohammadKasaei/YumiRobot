@@ -34,11 +34,11 @@ class yumiEnvSpatula():
 
         self._left_FK_offset = np.array([0,0.01,0.245])
         self._right_FK_offset = np.array([0,-0.01,0.245])
-        
-        
+                
         
         self.reset_robot()        
-        self.pos_offset = np.array([0,0])
+        self.pos_offset  = np.array([0,0])
+        self.box_ori = 0
         self._dummy_sim_step(1000)
 
         print("\n\n\nRobot is armed and ready to use...\n\n\n")
@@ -272,7 +272,10 @@ class yumiEnvSpatula():
     def go_on_top_of_box(self):
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
+
+        
         end_pos = np.array([0.5+self.pos_offset[0],0.145+self.pos_offset[1],0.5])
+        
         start_vel = np.array([.0, 0.0, 0.0])
         end_vel = np.array([0.0, 0.0, .0])
         start_acc = np.array([0.0, 0.0, 0.0])
@@ -288,13 +291,15 @@ class yumiEnvSpatula():
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
-        ori = p.getQuaternionFromEuler([0,np.pi,0])        
+        ori_l = p.getQuaternionFromEuler([0,np.pi,self.box_ori])        
+        ori_r = p.getQuaternionFromEuler([0,np.pi,self.box_ori])        
+        
 
         for i in range(len(t)):
             xd = np.array([xl_pos[i],yl_pos[i],zl_pos[i]])
-            pose_l = [xd,ori]      
+            pose_l = [xd,ori_l]      
             xd = np.array([xr_pos[i],yr_pos[i],zr_pos[i]])
-            pose_r = [xd,ori]      
+            pose_r = [xd,ori_r]      
                 
             self.move_left_arm(traget_pose=pose_l)
             self.move_right_arm(traget_pose=pose_r)
@@ -323,13 +328,14 @@ class yumiEnvSpatula():
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
-        ori = p.getQuaternionFromEuler([0,np.pi,0])        
-
+        ori_l = p.getQuaternionFromEuler([0,np.pi,self.box_ori])        
+        ori_r = p.getQuaternionFromEuler([0,np.pi,self.box_ori])        
+        
         for i in range(len(t)):
             xd = np.array([xl_pos[i],yl_pos[i],zl_pos[i]])
-            pose_l = [xd,ori]      
+            pose_l = [xd,ori_l]      
             xd = np.array([xr_pos[i],yr_pos[i],zr_pos[i]])
-            pose_r = [xd,ori]      
+            pose_r = [xd,ori_r]      
                 
             self.move_left_arm(traget_pose=pose_l)
             self.move_right_arm(traget_pose=pose_r)
@@ -357,13 +363,15 @@ class yumiEnvSpatula():
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
-        ori = p.getQuaternionFromEuler([0,np.pi,0])        
+        ori_l = p.getQuaternionFromEuler([0,np.pi,self.box_ori])        
+        ori_r = p.getQuaternionFromEuler([0,np.pi,self.box_ori])        
+        
 
         for i in range(len(t)):
             xd = np.array([xl_pos[i],yl_pos[i],zl_pos[i]])
-            pose_l = [xd,ori]      
+            pose_l = [xd,ori_l]      
             xd = np.array([xr_pos[i],yr_pos[i],zr_pos[i]])
-            pose_r = [xd,ori]      
+            pose_r = [xd,ori_r]      
                 
             self.move_left_arm(traget_pose=pose_l)
             self.move_right_arm(traget_pose=pose_r)
@@ -371,7 +379,7 @@ class yumiEnvSpatula():
             self._dummy_sim_step(1)
     
     def lift_up(self):
-        grasp_width = 0.05
+        grasp_width = 0.045
         lift_up = 0.5
         p0,o0 = self.get_left_ee_state()
         start_pos = p0
@@ -391,13 +399,15 @@ class yumiEnvSpatula():
         t, xr_pos, yr_pos, zr_pos, xr_vel, yr_vel, zr_vel, xr_acc, yr_acc, zr_acc = self.fifth_order_trajectory_planner_3d(
             start_pos, end_pos, start_vel, end_vel, start_acc, end_acc, duration, dt)
                     
-        ori = p.getQuaternionFromEuler([0,np.pi,0])        
+        ori_l = p.getQuaternionFromEuler([0,np.pi,self.box_ori])        
+        ori_r = p.getQuaternionFromEuler([0,np.pi,self.box_ori])        
+        
 
         for i in range(len(t)):
             xd = np.array([xl_pos[i],yl_pos[i],zl_pos[i]])
-            pose_l = [xd,ori]      
+            pose_l = [xd,ori_l]      
             xd = np.array([xr_pos[i],yr_pos[i],zr_pos[i]])
-            pose_r = [xd,ori]      
+            pose_r = [xd,ori_r]      
                 
             self.move_left_arm(traget_pose=pose_l)
             self.move_right_arm(traget_pose=pose_r)
@@ -750,9 +760,9 @@ class yumiEnvSpatula():
 
     def create_karolinska_env(self):
         
-        offset_x  = 0.03 + 0*np.random.randint(-50,50)/1000.0
-        offset_y  = -0.05 + 0*np.random.randint(-50,50)/1000.0
-        offset_th = 0.3 +0*np.random.randint(-300,300)/1000.0 # 10 degrees = 0.174533 rads
+        offset_x  =  0.0  + 1*np.random.randint(-50,50)/1000.0
+        offset_y  = -0.0  + 1*np.random.randint(-50,50)/1000.0
+        offset_th =  -0.3  + 0*np.random.randint(-300,300)/1000.0 # 10 degrees = 0.174533 rads
         
         print (f"offset_x : {offset_x:2.3f} offset_y : {offset_y:2.3f} offset_th : {offset_th:2.3f}")
 

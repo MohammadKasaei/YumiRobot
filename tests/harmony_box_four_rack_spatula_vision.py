@@ -23,7 +23,7 @@ if __name__ == '__main__':
     env = yumiEnvSpatula()
     obj_detection = InboxGraspPrediction() 
     env.create_karolinska_env()
-    time.sleep(5)
+    time.sleep(3)
     env.reset_robot()
 
     env.wait(20)
@@ -48,7 +48,15 @@ if __name__ == '__main__':
                     print ("grasp list:\n", gs_list)
                     box_center_pos = gs_list[0][0]            
                     env.pos_offset = env.convert_pixel_to_metter(box_center_pos) /1000.0
+                    
+                    env.box_ori    = np.pi/2 - np.arctan2(gs_list[0][2][1]-gs_list[0][1][1],gs_list[0][2][0]-gs_list[0][1][0])
                     print (f"offset: {env.pos_offset} ")
+                    print (f"orientation: {env.box_ori:3.3f}")
+                    
+                    env.pos_offset = env.pos_offset @ np.array([[np.cos(env.box_ori),-np.sin(env.box_ori)],[np.sin(env.box_ori),np.cos(env.box_ori)]])
+
+
+                    
                 
                     # plt.subplot(121)
                     # plt.imshow(obj_detection.image_raw)
@@ -62,7 +70,7 @@ if __name__ == '__main__':
                         obj_detection.show_points(obj_detection._input_point, obj_detection._input_label, plt.gca())
                         plt.imshow(obj_detection.image)
                         plt.axis('on')
-                        plt.show()
+                        plt.pause(1)
                 
             env.go_on_top_of_box()
             env.wait(1)
@@ -98,7 +106,6 @@ if __name__ == '__main__':
                 state = 0
             else:    
                 state = 10   #stop
-
             
         else:
             env._dummy_sim_step(50)
