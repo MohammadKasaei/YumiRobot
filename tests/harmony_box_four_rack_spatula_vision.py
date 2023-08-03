@@ -21,10 +21,23 @@ import matplotlib.pyplot as plt
 if __name__ == '__main__':
 
     env = yumiEnvSpatula()
+    # env.load_harmony_box_open_lid(pos = [0.5,0,0],ori=[0,0,np.pi/2])
+    # env.add_a_cube(pos=[0.50,0,0.06],ori=[0,0,0], size=[0.23,0.16,0.04],color=[0.1,0.1,0.1,1],mass=50)
+    # env.add_red_rack  (centre=[0.6,0.06,0.2],ori=np.array([0,0,np.pi/2]))
+    # env.add_red_rack  (centre=[0.6,0.06,0.2],ori=np.array([0,0,np.pi/2]))
+    # env.add_green_rack(centre=[0.6,-0.06,0.2],ori=np.array([0,0,np.pi/2]))        
+    # env.wait(1)
+    # while (1):
+    #     env.wait(1)
+    # env.add_red_rack(centre=[0.6,0.06,0.3],ori=np.array([0,0,np.pi/2]))
+    # env.add_green_rack(centre=[0.6,-0.06,0.3],ori=np.array([0,0,np.pi/2]))        
     obj_detection = InboxGraspPrediction() 
+
     env.create_karolinska_env()
     time.sleep(3)
     env.reset_robot()
+
+    
 
     env.wait(20)
     state = -1     
