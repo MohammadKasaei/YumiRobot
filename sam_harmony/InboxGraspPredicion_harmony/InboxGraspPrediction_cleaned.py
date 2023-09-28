@@ -47,58 +47,23 @@ class InboxGraspPrediction():
         width  = 700  # width of the ROI
         height = 350  # height of the ROI
         
-        # self.image = cv2.imread(image_path)
         # Crop the image using numpy array slicing
         image = self.image[y_offset:y_offset +height, x_offset :x_offset +width].copy()
         if vis_masks:
             cv2.imshow('image', image)
-            cv2.waitKey(0)
-
-
-        # # hsv filter
-        # self.hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
-
-        # h_min, h_max = 10 , 200
-        # s_min, s_max = 10 , 100
-        # v_min, v_max = 30,  140
-
-        # lower_threshold = np.array([h_min, s_min, v_min])
-        # upper_threshold = np.array([h_max, s_max, v_max])
-        # if color_picker:
-        #     cv2.imshow('hsv_image', self.hsv_image)
-        #     cv2.setMouseCallback('hsv_image', self.pick_color)
-
-        # mask = cv2.inRange(self.hsv_image, lower_threshold, upper_threshold)
-        # if vis_masks:
-        #     cv2.imshow('mask', mask)
-
-        # result = cv2.bitwise_and(image, image, mask=mask)
+            # cv2.waitKey(0)
 
         result = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
 
         # Gaussian blur to reduce noise
         blurred = cv2.GaussianBlur(result, (3, 3), 0)
-        # if vis_masks:
-        #     cv2.imshow('blurred', blurred)
-
-
-        # # Define the sharpening kernel
-        # sharpening_kernel = np.array([[-1, -1, -1],
-        #                             [-1,  9, -1],
-        #                             [-1, -1, -1]])
-
-        # # Apply the kernel to the image using cv2.filter2D function
-        # sharpened_image = cv2.filter2D(blurred, -1, sharpening_kernel)
 
         # Apply Canny edge detection
-        # edges = cv2.Canny(blurred, 100, 200)
-        # edges = cv2.Canny(result, 200, 255)   
         result = cv2.Canny(blurred, 50, 150)   
         
         if vis_masks:
-            cv2.imshow('edge', result)
-            
+            cv2.imshow('edge', result)            
        
         # Define the kernel for dilation
         kernel = np.ones((5, 5), np.uint8)  # Adjust the kernel size according to your needs
@@ -107,12 +72,6 @@ class InboxGraspPrediction():
         if vis_output:
             cv2.imshow('dilated', dilated)
 
-
-        # Detect contours with hierarchy
-        # contours, hierarchy = cv2.findContours(dilated, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-        # Extract external contours based on hierarchy information
-        # external_contours = [contour for i, contour in enumerate(contours) if hierarchy[0][i][3] == -1]
-        
 
         # Define the structuring element for erosion
         # Here, we're using a 5x5 rectangle
@@ -133,7 +92,7 @@ class InboxGraspPrediction():
 
         # # Define a perimeter threshold
         # min_perimeter = 100
-        # # max_perimeter = 500
+        # max_perimeter = 500
 
         filtered_contours = []
         for contour in contours:
@@ -151,8 +110,7 @@ class InboxGraspPrediction():
         max_contour_area = 80000  # Example value, adjust as needed
         # Filter contours by size
         filtered_contours2 = [contour for contour in filtered_contours if min_contour_area < cv2.contourArea(contour) < max_contour_area]
-        # filtered_contours2= []
-
+        
 
         if filtered_contours2 != []:
             # Find the largest contour by area
@@ -186,7 +144,7 @@ class InboxGraspPrediction():
 
             if vis_masks or vis_output:
                 # pass
-                cv2.waitKey(0)
+                cv2.waitKey(1)
                 # cv2.destroyAllWindows()
             return [x_offset +center_x, y_offset +center_y]
         print ("no contour found...")
@@ -224,17 +182,6 @@ class InboxGraspPrediction():
         self._input_label = np.ones(36)
         
     def config(self):
-        # input_point1 = np.array([300,200]).reshape(1,2)
-        # input_point2 = np.array([300,260]).reshape(1,2)
-        # step_x = 30
-        # step_y = 10
-        # for i in range(3):
-        #     for j in range(3):
-        #         input_point1 = np.vstack((input_point1,(input_point1[0,0]+i*step_x,input_point1[0,1]+j*step_y)))
-        #         input_point2 = np.vstack((input_point2,(input_point2[0,0]+i*step_x,input_point2[0,1]+j*step_y)))
-        # self._input_point = np.vstack((input_point1,input_point2))
-        # self._input_label = np.ones(20)
-
         
         input_point1 = np.array([330,210]).reshape(1,2)
         step_x = 10
@@ -246,36 +193,11 @@ class InboxGraspPrediction():
         self._input_point = input_point1        
         self._input_label = np.ones(22)
         
-        # remove regions
-        # remove_point_start = np.array([200,100]).reshape(1,2)
-        # step_x = 50
-        # step_y = 50
-        # for i in range(6):
-        #     for j in range(8):
-        #         input_point1 = np.vstack((input_point1,(remove_point_start[0,0]+i*step_x,remove_point_start[0,1]+j*step_y)))
 
-
-        # self._input_point = input_point1        
-        # self._input_label = np.ones(len(input_point1))
-
-        # self._input_label[13:] *= 0
-
-
-
-        # centre_point = np.array([330,240]).reshape(1,2)
-        # lim_x = 20
-        # lim_y = 20
-        # for i in range(9):
-        #         centre_point = np.vstack((centre_point,(centre_point[0,0]+int(np.random.uniform(-lim_x,lim_x)),centre_point[0,1]+int(np.random.uniform(-lim_y,lim_y)))))
-        # input_point1 = centre_point
-        # self._input_point = np.vstack((input_point1,input_point2))
-        # self._input_label = np.ones(11)
-        
-
-    def generate_masks(self,image_path):
+    def generate_masks(self,image_path,dbg_vis = False):
         self.image = cv2.imread(image_path)
         
-        center=self.find_box_centre(vis_masks=True,vis_output=True)
+        center=self.find_box_centre(vis_masks=dbg_vis,vis_output=dbg_vis)
         if center !=-1:
             self.config_params_based_on_box_centre(center)
         else:
@@ -284,21 +206,7 @@ class InboxGraspPrediction():
 
 
         self.image_rgb = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
-        # self.image_raw = self.image.copy()
         
-        kernel = np.ones((5,5),np.float32) / 30
-        # self.image = cv2.filter2D(self.image_raw,-1,kernel)
-        
-        # self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
-
-        dilatation_size = 2
-        # dilation_shape = cv2.MORPH_RECT
-        dilation_shape = cv2.MORPH_ELLIPSE        
-        element = cv2.getStructuringElement(dilation_shape, (2 * dilatation_size + 1, 2 * dilatation_size + 1),
-                                           (dilatation_size, dilatation_size))        
-        # self.image = cv2.dilate(self.image, element)
-
-
         self._predictor.set_image(self.image)
         self._masks, self._scores, self._logits = self._predictor.predict(
             point_coords=self._input_point,
@@ -320,43 +228,6 @@ class InboxGraspPrediction():
         return self._masks, self._scores
     
 
-    def generate_masks2(self,image):
-        self.image = image
-
-        self.image_rgb = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
-        kernel = np.ones((5,5),np.float32) / 30
-        self.image = cv2.filter2D(self.image_rgb,-1,kernel)
-        
-        # self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
-
-        dilatation_size = 2
-        # dilation_shape = cv2.MORPH_RECT
-        dilation_shape = cv2.MORPH_ELLIPSE        
-        element = cv2.getStructuringElement(dilation_shape, (2 * dilatation_size + 1, 2 * dilatation_size + 1),
-                                           (dilatation_size, dilatation_size))        
-        self.image = cv2.dilate(self.image, element)
-
-
-        self._predictor.set_image(self.image)
-        self._masks, self._scores, self._logits = self._predictor.predict(
-            point_coords=self._input_point,
-            point_labels=self._input_label,
-            # multimask_output=True,
-            # box=input_box[None, :],
-            multimask_output=True,
-        )
-
-        mask_input = self._logits[np.argmax(self._scores), :, :]  # Choose the model's best mask
-
-        self._masks, _, _ = self._predictor.predict(
-            point_coords=self._input_point,
-            point_labels=self._input_label,
-            mask_input=mask_input[None, :, :],
-            multimask_output=False,
-        )
-
-        return self._masks, self._scores
-    
     def generate_grasp(self,mask,vis=True):
 
         (contours, hierarchy) = cv2.findContours(np.uint8(mask*255), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
@@ -372,9 +243,7 @@ class InboxGraspPrediction():
                 center = np.int16((np.mean(box[:,0]),np.mean(box[:,1])))
                 tmp = box.tolist() 
                 bs =np.array(sorted(tmp, key=lambda a_entry: a_entry[0]))
-                # center1 = np.int16(((bs[0,0]+bs[1,0])/2,(bs[0,1]+bs[1,1])/2))        
-                # center2 = np.int16(((bs[2,0]+bs[3,0])/2,(bs[2,1]+bs[3,1])/2))      
-                #   
+               
                 center1 = np.int16(((bs[0,0]+bs[1,0])/2,(bs[0,1]+bs[1,1])/2))        
                 center2 = np.int16(((bs[2,0]+bs[3,0])/2,(bs[2,1]+bs[3,1])/2))        
                 
@@ -411,7 +280,7 @@ if __name__ == "__main__":
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230925_112645_captured.jpg"
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230925_112645_captured.jpg"
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230925_112645_captured.jpg"
-    image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230925_112621_captured.jpg"
+    # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230925_112621_captured.jpg"
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230925_112549_captured.jpg"
 
     # new bag file
@@ -429,29 +298,9 @@ if __name__ == "__main__":
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094405_captured.jpg"
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094406_captured.jpg"
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094423_captured.jpg"
-    # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094504_captured.jpg"
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-
-
-    
-    # gs.find_box_centre(image_path,vis_masks = True,vis_output=True)
-    
-
-    
-    masks, scores = gs.generate_masks(image_path)
+    image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094504_captured.jpg"
+        
+    masks, scores = gs.generate_masks(image_path,dbg_vis=True)
     
 
     for i, (mask, score) in enumerate(zip(masks, scores)):
