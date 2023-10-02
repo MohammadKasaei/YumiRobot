@@ -284,7 +284,7 @@ if __name__ == "__main__":
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230925_112549_captured.jpg"
 
     # new bag file
-    # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094448_captured.jpg"
+    image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094448_captured.jpg"
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094410_captured.jpg"
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094449_captured.jpg"
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094457_captured.jpg"
@@ -298,9 +298,9 @@ if __name__ == "__main__":
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094405_captured.jpg"
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094406_captured.jpg"
     # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094423_captured.jpg"
-    image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094504_captured.jpg"
+    # image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230927_094504_captured.jpg"
         
-    masks, scores = gs.generate_masks(image_path,dbg_vis=True)
+    masks, scores = gs.generate_masks(image_path,dbg_vis=False)
     
 
     for i, (mask, score) in enumerate(zip(masks, scores)):
