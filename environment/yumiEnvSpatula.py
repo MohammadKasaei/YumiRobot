@@ -757,9 +757,25 @@ class yumiEnvSpatula():
         print("Robot Frame Coordinate:", tuple(robot_pos))
 
         return robot_pos
+    
+    def load_harmony_box_open_lid(self,pos=np.array([2, 0, 0]),ori=np.array([0, 0, 0])):
+        shape_id = p.createCollisionShape(
+            shapeType=p.GEOM_MESH,
+            fileName="objects/box_assembly_open.stl",flags=p.URDF_INITIALIZE_SAT_FEATURES)
+        
+        viz_shape_id = p.createVisualShape(
+            shapeType=p.GEOM_MESH,
+            fileName="objects/box_assembly_open.stl")
+        
+        body_id = p.createMultiBody(
+            # baseCollisionShapeIndex=shape_id,
+            baseVisualShapeIndex=viz_shape_id,
+            basePosition=pos,
+            baseOrientation=p.getQuaternionFromEuler(ori))
+        self._dummy_sim_step(10)
 
     def create_karolinska_env(self):
-        
+
         offset_x  =  0.0  + 1*np.random.randint(-50,50)/1000.0
         offset_y  = -0.0  + 1*np.random.randint(-50,50)/1000.0
         offset_th =  -0.3  + 0*np.random.randint(-300,300)/1000.0 # 10 degrees = 0.174533 rads
