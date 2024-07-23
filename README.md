@@ -36,7 +36,7 @@ Click the links below to download the checkpoint for the corresponding model typ
 - `vit_l`: [ViT-L SAM model.](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_l_0b3195.pth)
 - `vit_b`: [ViT-B SAM model.](https://dl.fbaipublicfiles.com/segment_anything/sam_vit_b_01ec64.pth)
 
-After downloading, place the models into the `sam_harmony/models/` folder. By default, we use the `vit_b` model, but it can be replaced by the others.
+After downloading, place the models into the `sam_harmony/models/` folder. By default, we use the `vit_b` model, but it can be replaced by the other model, to do that, you should set the `sam_model` argument of `InboxGraspPrediction` class once creating an instance of it.
 
 ## Running
 After installing all the dependencies and downloading the models and placing them into the `sam_harmony/models/` folder, you can run the simulator. We also provide a version that does not include the vision pipeline, so you do not need to download the models.
