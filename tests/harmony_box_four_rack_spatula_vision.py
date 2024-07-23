@@ -30,7 +30,7 @@ if __name__ == '__main__':
     # while (1):
     #     env.wait(1)
     # env.add_red_rack(centre=[0.6,0.06,0.3],ori=np.array([0,0,np.pi/2]))
-    # env.add_green_rack(centre=[0.6,-0.06,0.3],ori=np.array([0,0,np.pi/2]))        
+    env.add_green_rack(centre=[0.6,-0.06,0.3],ori=np.array([0,0,np.pi/2]))        
     obj_detection = InboxGraspPrediction() 
 
     env.create_karolinska_env()
