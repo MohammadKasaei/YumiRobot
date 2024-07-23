@@ -774,11 +774,11 @@ class yumiEnvSpatula():
             baseOrientation=p.getQuaternionFromEuler(ori))
         self._dummy_sim_step(10)
 
-    def create_karolinska_env(self):
-
-        offset_x  =  0.0  + 1*np.random.randint(-50,50)/1000.0
-        offset_y  = -0.0  + 1*np.random.randint(-50,50)/1000.0
-        offset_th =  -0.3  + 0*np.random.randint(-300,300)/1000.0 # 10 degrees = 0.174533 rads
+    def create_karolinska_env(self, random_pos=False):
+        
+        offset_x  =  0.0  + random_pos*np.random.randint(-50,50)/1000.0
+        offset_y  = -0.0  + random_pos*np.random.randint(-50,50)/1000.0
+        offset_th =  random_pos*-0.3  + random_pos*np.random.randint(-300,300)/1000.0 # 10 degrees = 0.174533 rads
         
         print (f"offset_x : {offset_x:2.3f} offset_y : {offset_y:2.3f} offset_th : {offset_th:2.3f}")
 
