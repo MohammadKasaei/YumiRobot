@@ -62,25 +62,11 @@ Once everything is successfully installed, you'll see a box containing four rack
 ![alt](images/yumi_without_vision.gif)
 
 
-# Citation
-If you find our paper or this repository helpful, please cite our work:
-
-```
-@inproceedings{kasaei2023data,
-  title={A Data-efficient Neural ODE Framework for Optimal Control of Soft Manipulators},
-  author={Kasaei, Mohammadreza and Babarahmati, Keyhan Kouhkiloui and Li, Zhibin and Khadem, Mohsen},
-  booktitle={7th Annual Conference on Robot Learning},
-  year={2023}
-}
-```
-
-
 
 
 # License
 This project is licensed under the MIT License.
 
 # Acknowledgments
-This work is supported by EU H2020 project Enhancing Healthcare with Assistive Robotic Mobile Manipulation (HARMONY, 101017008) and the Medical Research Council [MR/T023252/1].
-
+This work is supported by EU H2020 project Enhancing Healthcare with Assistive Robotic Mobile Manipulation (HARMONY, 101017008).
 
