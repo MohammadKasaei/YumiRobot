@@ -27,31 +27,7 @@ Wait for the script to complete. Once done, all the required dependencies should
 
 
 
-# Dependencies
-The code requires `python>=3.10`, as well as `pytorch>=2.0.1` and 'CUDA Version: 12.0'
-
-Install pytorch:
-```
-pip install torch torchvision 
-```
-
-Install Segment Anything:
-```
-pip install git+https://github.com/facebookresearch/segment-anything.git
-```
-
-
-The following dependencies are necessary for mask post-processing, 
-
-```
-pip install opencv-python pycocotools numpy matplotlib onnxruntime onnx 
-```
-
-Also install open3d and scikit-image:
-```
-pip install open3d scikit-image
-```
-
+# Download SAM Models
 
 Click the links below to download the checkpoint for the corresponding model type.
 
@@ -63,4 +39,27 @@ Click the links below to download the checkpoint for the corresponding model typ
 After downloading, put the models into `sam_harmony/models/` folder. By defualt we used `vit_b` model, but it can be replaced by the others.
 
 
-# Compile and Running
+# Running
+After installing all the dependencies and downloading the models and put them into the `sam_harmony/models/` folder, you can run the simulator. We also provide a version that does not have the vision pipeline, so you dont need to download the models.
+
+
+# Vision-based grasping from the box
+```
+python -m tests.harmony_test_vision
+```
+Once everything successfully installed, you'll see a box containing four racks randomly place in front of the simulated Yumi robot and the robot is performing rack extraction task.
+
+![alt](images/yumi_with_vision.gif)
+
+The vision pipeline is composed of four stages:
+
+![alt](images/grasp-pipeline.png)
+
+# Blind grasping from the box
+```
+python -m tests.harmony_test_vision
+```
+Once everything successfully installed, you'll see a box containing four racks placed in front of the simulated Yumi robot in a fixed position, and the robot is performing rack extraction task.
+
+
+![alt](images/yumi_without_vision.gif)

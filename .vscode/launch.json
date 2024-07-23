@@ -27,10 +27,10 @@
             "justMyCode": true
         },
         {
-            "name": "Python: HarmonyBox Spatula - 4 racks- vision",
+            "name": "Python: HarmonyBox test with vision",
             "type": "python",
             "request": "launch",
-            "module": "tests.harmony_box_four_rack_spatula_vision",
+            "module": "tests.harmony_test_vision",
             "justMyCode": true
         },
         {
@@ -41,10 +41,10 @@
             "justMyCode": true
         },
         {
-            "name": "Python: HarmonyBox Spatula - 4 racks",
+            "name": "Python: HarmonyBox test without vision",
             "type": "python",
             "request": "launch",
-            "module": "tests.harmony_box_four_rack_spatula",
+            "module": "tests.harmony_test_without_vision",
             "justMyCode": true
         },
         {

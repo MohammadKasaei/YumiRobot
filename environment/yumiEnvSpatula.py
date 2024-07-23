@@ -778,7 +778,7 @@ class yumiEnvSpatula():
         
         offset_x  =  0.0  + random_pos*np.random.randint(-50,50)/1000.0
         offset_y  = -0.0  + random_pos*np.random.randint(-50,50)/1000.0
-        offset_th =  random_pos*-0.3  + random_pos*np.random.randint(-300,300)/1000.0 # 10 degrees = 0.174533 rads
+        offset_th =  random_pos*-0.2  + random_pos*np.random.randint(-200,200)/1000.0 # 10 degrees = 0.174533 rads
         
         print (f"offset_x : {offset_x:2.3f} offset_y : {offset_y:2.3f} offset_th : {offset_th:2.3f}")
 
