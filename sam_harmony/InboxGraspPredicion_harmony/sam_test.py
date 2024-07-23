@@ -58,7 +58,9 @@ sam.to(device=device)
 mask_generator1 = SamAutomaticMaskGenerator(sam, points_per_batch=16)
 predictor = SamPredictor(sam)
 
-image_path = "sam_harmony/InboxGraspPredicion_harmony/images/simImgs/rgbtest20230704-151403.png"
+# image_path = "sam_harmony/InboxGraspPredicion_harmony/images/simImgs/rgbtest20230704-151403.png"
+image_path = "sam_harmony/InboxGraspPredicion_harmony/images/capture_images/20230925_112606_captured.jpg"
+
 # image_information = cv2.imread(image_path)
 # image = cv2.resize(image_information, (224,224))
 image = cv2.imread(image_path)
@@ -89,7 +91,6 @@ input_point = np.vstack((input_point1,input_point2))
 input_label = np.ones(20)
 # input_label[0:10] = 0
 # input_label[10:] = 0
-
 
 
 predictor.set_image(image)

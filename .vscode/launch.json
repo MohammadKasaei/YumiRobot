@@ -5,6 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Python: HarmonyIntegration",
+            "type": "python",
+            "request": "launch",
+            "module": "sam_harmony.InboxGraspPredicion_harmony.InboxGraspPrediction_cleaned",
+            "justMyCode": true
+        },
+        {
             "name": "Python: Current File",
             "type": "python",
             "request": "launch",
