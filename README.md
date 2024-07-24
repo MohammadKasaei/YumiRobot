@@ -1,7 +1,14 @@
-
 # YumiRobot
+This repository is part of my contributions to the EU-Horizon 2020 project named [Harmony](https://harmony-eu.org/), which focuses on improving healthcare services with advanced robotic solutions. The YumiRobot project involves the development of a simulated Yumi robot capable of performing complex tasks such as rack extraction using both vision-based and blind grasping techniques. The implementation leverages state-of-the-art models and algorithms to achieve high precision and reliability in robotic manipulation tasks.
 
-## Installation and Setup
+
+
+
+
+
+
+
+## Installation 
 
 ### Clone the Repository:
 
