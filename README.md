@@ -1,6 +1,12 @@
 # YumiRobot
 This repository is part of my contributions to the EU-Horizon 2020 project named [Harmony](https://harmony-eu.org/), which focuses on improving healthcare services with advanced robotic solutions. The YumiRobot project involves the development of a simulated Yumi robot capable of performing complex tasks such as rack extraction using both vision-based and blind grasping techniques. The implementation leverages state-of-the-art models and algorithms to achieve high precision and reliability in robotic manipulation tasks.
 
+<div align="center">
+  <img src="images/yumi_without_vision.gif" alt="Image description" width="640">
+</div>
+
+<!-- ![alt](images/yumi_without_vision.gif) -->
+
 
 ## Installation 
 
@@ -58,9 +64,7 @@ The vision pipeline is composed of four stages:
 ```bash
 python -m tests.harmony_test_vision
 ```
-Once everything is successfully installed, you'll see a box containing four racks placed in a fixed position in front of the simulated Yumi robot, and the robot will perform a rack extraction task.
-
-![alt](images/yumi_without_vision.gif)
+<!-- Once everything is successfully installed, you'll see a box containing four racks placed in a fixed position in front of the simulated Yumi robot, and the robot will perform a rack extraction task. -->
 
 
 
