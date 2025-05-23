@@ -5,9 +5,6 @@ This repository is part of my contributions to the EU-Horizon 2020 project named
   <img src="images/yumi_without_vision.gif" alt="Image description" width="640">
 </div>
 
-<!-- ![alt](images/yumi_without_vision.gif) -->
-
-
 ## Installation 
 
 ### Clone the Repository:
@@ -54,17 +51,22 @@ python -m tests.harmony_test_vision
 ```
 Once everything is successfully installed, you'll see a box containing four racks randomly placed in front of the simulated Yumi robot, and the robot will perform a rack extraction task.
 
-![alt](images/yumi_with_vision.gif)
+<div align="center">
+  <img src="images/yumi_with_vision.gif" alt="Image description" width="640">
+</div>
+
 
 The vision pipeline is composed of four stages:
+<div align="center">
+  <img src="images/grasp-pipeline.png" alt="Image description" width="640">
+</div>
 
-![alt](images/grasp-pipeline.png)
 
 ## Blind Grasping from the Box
 ```bash
 python -m tests.harmony_test_vision
 ```
-<!-- Once everything is successfully installed, you'll see a box containing four racks placed in a fixed position in front of the simulated Yumi robot, and the robot will perform a rack extraction task. -->
+
 
 
 
